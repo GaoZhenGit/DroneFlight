@@ -43,12 +43,14 @@ public class FlightActivity extends AppCompatActivity {
             finish();
             return;
         }
-        VideoFeeder.getInstance().getPrimaryVideoFeed().addVideoDataListener(new VideoFeeder.VideoDataListener() {
-            @Override
-            public void onReceive(byte[] bytes, int i) {
-
-            }
-        });
+//        VideoFeeder.getInstance().getPrimaryVideoFeed().addVideoDataListener(new VideoFeeder.VideoDataListener() {
+//            @Override
+//            public void onReceive(byte[] bytes, int i) {
+//
+//            }
+//        });
 
     }
+
+
 }

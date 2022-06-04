@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
-        android:background="@drawable/default_background"
+        android:background="@drawable/default_background_round"
         android:gravity="center_vertical|left"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"

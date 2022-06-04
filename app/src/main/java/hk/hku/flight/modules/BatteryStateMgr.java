@@ -50,6 +50,9 @@ public class BatteryStateMgr {
         if (battery == null) {
             return -1;
         }
+        if (!battery.isConnected()) {
+            return -1;
+        }
         return mBatteryPercentage;
     }
 }

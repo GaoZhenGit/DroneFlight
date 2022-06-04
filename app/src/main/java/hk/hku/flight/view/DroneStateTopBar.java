@@ -15,11 +15,13 @@ import hk.hku.flight.Constant;
 import hk.hku.flight.DroneApplication;
 import hk.hku.flight.R;
 import hk.hku.flight.modules.BatteryStateMgr;
+import hk.hku.flight.modules.FlyingStateMgr;
 import hk.hku.flight.modules.SignalStateMgr;
 
 public class DroneStateTopBar extends RelativeLayout {
     private TextView mBattery;
     private TextView mSignal;
+    private TextView mAltitude;
     private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -30,6 +32,12 @@ public class DroneStateTopBar extends RelativeLayout {
         @Override
         public void onReceive(Context context, Intent intent) {
             updateSignal();
+        }
+    };
+    private final BroadcastReceiver mFlyingStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateAltitude();
         }
     };
     private final BroadcastReceiver mConnectionReceiver = new BroadcastReceiver() {
@@ -58,6 +66,9 @@ public class DroneStateTopBar extends RelativeLayout {
 
         mSignal = findViewById(R.id.tv_state_top_bar_signal);
         updateSignal();
+
+        mAltitude = findViewById(R.id.tv_state_top_bar_altitude);
+        updateAltitude();
     }
 
     private void updateBattery() {
@@ -81,16 +92,26 @@ public class DroneStateTopBar extends RelativeLayout {
         mSignal.setText(String.format("Up:%d Down:%d", up, down));
     }
 
+    private void updateAltitude() {
+        if (mAltitude == null) {
+            return;
+        }
+        float altitude = FlyingStateMgr.getInstance().getAltitude();
+        mAltitude.setText(String.format("H:%.1fm", altitude));
+    }
+
     private void setCallbacks() {
         DroneApplication.getInstance().registerReceiver(mConnectionReceiver, new IntentFilter(Constant.FLAG_CONNECTION_CHANGE));
         DroneApplication.getInstance().registerReceiver(mBatteryReceiver, new IntentFilter(Constant.FLAG_BATTERY_PERCENTAGE));
         DroneApplication.getInstance().registerReceiver(mSignalReceiver, new IntentFilter(Constant.FLAG_SIGNAL_QUANTITY));
+        DroneApplication.getInstance().registerReceiver(mFlyingStateReceiver, new IntentFilter(Constant.FLAG_FLIGHT_CONTROL_STATE));
     }
 
     private void removeCallbacks() {
         DroneApplication.getInstance().unregisterReceiver(mConnectionReceiver);
         DroneApplication.getInstance().unregisterReceiver(mBatteryReceiver);
         DroneApplication.getInstance().unregisterReceiver(mSignalReceiver);
+        DroneApplication.getInstance().unregisterReceiver(mFlyingStateReceiver);
     }
 
     @Override

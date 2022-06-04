@@ -46,6 +46,7 @@ import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LDMModule;
 import dji.sdk.sdkmanager.LDMModuleType;
 import hk.hku.flight.modules.BatteryStateMgr;
+import hk.hku.flight.modules.FlyingStateMgr;
 import hk.hku.flight.modules.SignalStateMgr;
 import hk.hku.flight.util.ThreadManager;
 
@@ -251,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
             mHandler.postDelayed(() -> BatteryStateMgr.getInstance().addBatteryCallback(), 1000);
             mHandler.postDelayed(() -> SignalStateMgr.getInstance().addSignalCallback(), 1000);
+            mHandler.postDelayed(() -> FlyingStateMgr.getInstance().addFlyingStateCallback(), 1000);
             return;
         }
         if (product instanceof Aircraft) {

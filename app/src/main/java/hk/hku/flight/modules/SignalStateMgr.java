@@ -83,6 +83,9 @@ public class SignalStateMgr {
         if (airLink == null) {
             return -1;
         }
+        if (!airLink.isConnected()) {
+            return -1;
+        }
         return mDownSignal;
     }
 }
