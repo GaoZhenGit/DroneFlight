@@ -5,8 +5,6 @@ import android.content.Context;
 
 import androidx.multidex.MultiDex;
 
-import com.secneo.sdk.Helper;
-
 import dji.sdk.base.BaseProduct;
 import dji.sdk.products.Aircraft;
 import dji.sdk.products.HandHeld;
@@ -15,12 +13,12 @@ import dji.sdk.sdkmanager.DJISDKManager;
 
 public class DroneApplication extends Application {
 
-    public static final String TAG = DroneApplication.class.getName();
+    public static final String TAG = "DroneApplication";
 
     private static BaseProduct product;
     private static BluetoothProductConnector bluetoothConnector = null;
 //    private static Bus bus = new Bus(ThreadEnforcer.ANY);
-    private static Application app = null;
+    private static DroneApplication app = null;
 
     /**
      * Gets instance of the specific product connected after the
@@ -59,7 +57,7 @@ public class DroneApplication extends Application {
         return (HandHeld) getProductInstance();
     }
 
-    public static Application getInstance() {
+    public static DroneApplication getInstance() {
         return DroneApplication.app;
     }
 

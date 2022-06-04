@@ -1,9 +1,6 @@
 package hk.hku.flight;
 
-import static hk.hku.flight.Constant.FLAG_BATTERY_PERCENTAGE;
 import static hk.hku.flight.Constant.FLAG_CONNECTION_CHANGE;
-import static hk.hku.flight.Constant.FLAG_DOWN_SIGNAL_QUANTITY;
-import static hk.hku.flight.Constant.FLAG_UP_SIGNAL_QUANTITY;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +45,8 @@ import dji.sdk.sdkmanager.DJISDKInitEvent;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LDMModule;
 import dji.sdk.sdkmanager.LDMModuleType;
+import hk.hku.flight.modules.BatteryStateMgr;
+import hk.hku.flight.modules.SignalStateMgr;
 import hk.hku.flight.util.ThreadManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -77,44 +76,6 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             checkRegister();
             checkConnect();
-//            Log.i(TAG, "on Device state change, try re-register");
-//            BaseProduct product = DJISDKManager.getInstance().getProduct();
-//            if (product == null) {
-//                Log.i(TAG, "connection loss");
-//                return;
-//            }
-//            AirLink airLink = product.getAirLink();
-//            if (airLink == null) {
-//                Log.i(TAG, "airLink connection loss");
-//            } else {
-//                airLink.setUplinkSignalQualityCallback(null);
-//                airLink.setDownlinkSignalQualityCallback(i -> {
-//                    Log.i(TAG, "Down link SignalQuality:" + i);
-//                    Intent intent1 = new Intent(FLAG_DOWN_SIGNAL_QUANTITY);
-//                    intent1.putExtra(FLAG_DOWN_SIGNAL_QUANTITY, i);
-//                    sendBroadcast(intent1);
-//                });
-//                airLink.setDownlinkSignalQualityCallback(null);
-//                airLink.setUplinkSignalQualityCallback(i -> {
-//                    Log.i(TAG, "Up link SignalQuality:" + i);
-//                    Intent intent12 = new Intent(FLAG_UP_SIGNAL_QUANTITY);
-//                    intent12.putExtra(FLAG_UP_SIGNAL_QUANTITY, i);
-//                    sendBroadcast(intent12);
-//                });
-//            }
-//            Battery battery = product.getBattery();
-//            if (battery == null) {
-//                Log.i(TAG, "battery connection loss");
-//            } else {
-//                battery.setStateCallback(null);
-//                battery.setStateCallback(batteryState -> {
-//                    int percentage = batteryState.getChargeRemainingInPercent();
-//                    Log.i(TAG, "battery percentage:" + percentage);
-//                    Intent intent13 = new Intent(FLAG_BATTERY_PERCENTAGE);
-//                    intent13.putExtra(FLAG_BATTERY_PERCENTAGE, percentage);
-//                    sendBroadcast(intent13);
-//                });
-//            }
         }
     };
 
@@ -287,6 +248,9 @@ public class MainActivity extends AppCompatActivity {
             ((ImageView)findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_ok);
             ((ImageView)findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_ok);
             findViewById(R.id.btn_start_fly).setEnabled(true);
+
+            mHandler.postDelayed(() -> BatteryStateMgr.getInstance().addBatteryCallback(), 1000);
+            mHandler.postDelayed(() -> SignalStateMgr.getInstance().addSignalCallback(), 1000);
             return;
         }
         if (product instanceof Aircraft) {

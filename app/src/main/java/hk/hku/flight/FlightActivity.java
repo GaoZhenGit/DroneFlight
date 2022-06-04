@@ -37,7 +37,6 @@ public class FlightActivity extends AppCompatActivity {
     private void initView() {
         videoFeedView = findViewById(R.id.preview_view);
         videoFeedView.registerLiveVideo(VideoFeeder.getInstance().getPrimaryVideoFeed(), true);
-//        textureView = findViewById(R.id.preview2_view);
         Aircraft aircraft = DroneApplication.getAircraftInstance();
         if (aircraft == null) {
             Toast.makeText(this, "connection loss!", Toast.LENGTH_SHORT).show();
