@@ -22,9 +22,61 @@
             android:text="H:%fm"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/tv_state_top_bar_vspeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="%fm/s"
+            android:textColor="@android:color/white"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/tv_state_top_bar_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="D:%fm"
+            android:textColor="@android:color/white"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/tv_state_top_bar_hspeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="%fm/s"
+            android:textColor="@android:color/white"
+            android:textSize="13dp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/tv_state_top_bar_satellite_container"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_toLeftOf="@id/tv_state_top_bar_signal_container"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/satellite" />
+
+        <TextView
+            android:id="@+id/tv_state_top_bar_satellite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="0"
+            android:textColor="@android:color/white"
+            android:textSize="13dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tv_state_top_bar_signal_container"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_toLeftOf="@id/tv_state_top_bar_battery_container"
@@ -42,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:text="Up:%s Down:%s"
+            android:text="↑:%s ↓:%s"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
     </LinearLayout>

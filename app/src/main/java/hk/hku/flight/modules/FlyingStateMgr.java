@@ -4,8 +4,12 @@ import android.content.Intent;
 import android.util.Log;
 
 import dji.common.flightcontroller.FlightControllerState;
+import dji.common.flightcontroller.LocationCoordinate3D;
+import dji.common.model.LocationCoordinate2D;
+import dji.common.util.LocationUtils;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.products.Aircraft;
+import dji.sdk.util.LocationUtil;
 import hk.hku.flight.Constant;
 import hk.hku.flight.DroneApplication;
 
@@ -34,7 +38,7 @@ public class FlyingStateMgr {
         mAltitude = state.getTakeoffLocationAltitude();
         flightController.setStateCallback(null);
         flightController.setStateCallback(flightControllerState -> {
-            mAltitude = flightControllerState.getAircraftLocation().getAltitude();
+            updateStates(flightControllerState);
             Log.i(TAG, "altitude change:" + mAltitude);
             Intent intent = new Intent(Constant.FLAG_FLIGHT_CONTROL_STATE);
             DroneApplication.getInstance().sendBroadcast(intent);
@@ -42,24 +46,85 @@ public class FlyingStateMgr {
     }
 
     private float mAltitude = 0;
+    private double mDistance = 0;
+    private double mHorizonV = 0;
+    private float mVerticalV = 0;
+    private int mSatelliteCount = 0;
+
     public float getAltitude() {
+        FlightControllerState state = check();
+        if (state == null) {
+            return 0;
+        } else {
+            updateStates(state);
+        }
+        return mAltitude;
+    }
+
+    public double getDistance() {
+        FlightControllerState state = check();
+        if (state == null) {
+            return 0;
+        } else {
+            updateStates(state);
+        }
+        return mDistance;
+    }
+
+    public double getHorizonV() {
+        FlightControllerState state = check();
+        if (state == null) {
+            return 0;
+        } else {
+            updateStates(state);
+        }
+        return mHorizonV;
+    }
+
+    public float getVerticalV() {
+        FlightControllerState state = check();
+        if (state == null) {
+            return 0;
+        } else {
+            updateStates(state);
+        }
+        return mVerticalV;
+    }
+
+    public int getSatelliteCount() {
+        FlightControllerState state = check();
+        if (state == null) {
+            return 0;
+        } else {
+            updateStates(state);
+        }
+        return mSatelliteCount;
+    }
+
+    private FlightControllerState check() {
         Aircraft aircraft = DroneApplication.getAircraftInstance();
         if (aircraft == null) {
-            return 0;
+            return null;
         }
         FlightController flightController = aircraft.getFlightController();
         if (flightController == null) {
-            return 0;
+            return null;
         }
         if (!flightController.isConnected()) {
-            return 0;
+            return null;
         }
-        FlightControllerState state = flightController.getState();
-        if (state == null) {
-            return 0;
-        }
+        return flightController.getState();
+    }
+
+    private void updateStates(FlightControllerState state) {
         mAltitude = state.getAircraftLocation().getAltitude();
-        return mAltitude;
+        LocationCoordinate2D home = state.getHomeLocation();
+        LocationCoordinate3D drone = state.getAircraftLocation();
+        LocationCoordinate2D drone2d = new LocationCoordinate2D(drone.getLatitude(), drone.getLongitude());
+        mDistance = LocationUtils.gps2m(home, drone2d);
+        mVerticalV = state.getVelocityZ();
+        mHorizonV = Math.sqrt(Math.pow(state.getVelocityX(), 2) + Math.pow(state.getVelocityY(), 2));
+        mSatelliteCount = state.getSatelliteCount();
     }
 
 }

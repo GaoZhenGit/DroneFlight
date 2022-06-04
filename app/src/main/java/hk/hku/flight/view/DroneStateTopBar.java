@@ -1,7 +1,5 @@
 package hk.hku.flight.view;
 
-import static hk.hku.flight.Constant.FLAG_BATTERY_PERCENTAGE;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +20,10 @@ public class DroneStateTopBar extends RelativeLayout {
     private TextView mBattery;
     private TextView mSignal;
     private TextView mAltitude;
+    private TextView mAltitudeSpeed;
+    private TextView mDistance;
+    private TextView mDistanceSpeed;
+    private TextView mSatellite;
     private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -37,7 +39,7 @@ public class DroneStateTopBar extends RelativeLayout {
     private final BroadcastReceiver mFlyingStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateAltitude();
+            updateFlyingState();
         }
     };
     private final BroadcastReceiver mConnectionReceiver = new BroadcastReceiver() {
@@ -68,7 +70,11 @@ public class DroneStateTopBar extends RelativeLayout {
         updateSignal();
 
         mAltitude = findViewById(R.id.tv_state_top_bar_altitude);
-        updateAltitude();
+        mAltitudeSpeed = findViewById(R.id.tv_state_top_bar_vspeed);
+        mDistance = findViewById(R.id.tv_state_top_bar_distance);
+        mDistanceSpeed = findViewById(R.id.tv_state_top_bar_hspeed);
+        mSatellite = findViewById(R.id.tv_state_top_bar_satellite);
+        updateFlyingState();
     }
 
     private void updateBattery() {
@@ -89,15 +95,30 @@ public class DroneStateTopBar extends RelativeLayout {
         }
         int up = SignalStateMgr.getInstance().getUpSignal();
         int down = SignalStateMgr.getInstance().getDownSignal();
-        mSignal.setText(String.format("Up:%d Down:%d", up, down));
+        mSignal.setText(String.format("↑:%d%% ↓:%d%%", up, down));
     }
 
-    private void updateAltitude() {
-        if (mAltitude == null) {
-            return;
+    private void updateFlyingState() {
+        if (mAltitude != null) {
+            float altitude = FlyingStateMgr.getInstance().getAltitude();
+            mAltitude.setText(String.format("H:%.1fm", altitude));
         }
-        float altitude = FlyingStateMgr.getInstance().getAltitude();
-        mAltitude.setText(String.format("H:%.1fm", altitude));
+        if (mAltitudeSpeed != null) {
+            double altitudeSpeed = FlyingStateMgr.getInstance().getVerticalV();
+            mAltitudeSpeed.setText(String.format("%.1fm/s", altitudeSpeed));
+        }
+        if (mDistance != null) {
+            double distance = FlyingStateMgr.getInstance().getDistance();
+            mDistance.setText(String.format("D:%.1fm", distance));
+        }
+        if (mDistanceSpeed != null) {
+            double distanceSpeed = FlyingStateMgr.getInstance().getHorizonV();
+            mDistanceSpeed.setText(String.format("%.1fm/s", distanceSpeed));
+        }
+        if (mSatellite != null) {
+            int satellite = FlyingStateMgr.getInstance().getSatelliteCount();
+            mSatellite.setText(String.valueOf(satellite));
+        }
     }
 
     private void setCallbacks() {
