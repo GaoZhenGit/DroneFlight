@@ -95,7 +95,7 @@ public class DroneStateTopBar extends RelativeLayout {
         }
         int up = SignalStateMgr.getInstance().getUpSignal();
         int down = SignalStateMgr.getInstance().getDownSignal();
-        mSignal.setText(String.format("↑:%d%% ↓:%d%%", up, down));
+        mSignal.setText(String.format("↑%d%% ↓%d%%", up, down));
     }
 
     private void updateFlyingState() {

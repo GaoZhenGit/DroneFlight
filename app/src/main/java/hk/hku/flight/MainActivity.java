@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         if (missingPermission.isEmpty()) {
             startSDKRegistration();
         }
-        startSDKRegistration();
         findViewById(R.id.btn_register).setOnClickListener(v -> {
             checkPermission();
             if (!missingPermission.isEmpty()) {
@@ -221,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            showToast("Need to grant the permissions!");
             ActivityCompat.requestPermissions(this,
                     missingPermission.toArray(new String[missingPermission.size()]),
                     REQUEST_PERMISSION_CODE);

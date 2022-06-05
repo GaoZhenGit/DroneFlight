@@ -134,9 +134,10 @@
         android:background="@drawable/bg_start_fly"
         android:enabled="false"
         android:gravity="center"
-        android:text="FLY"
+        android:text="GO !"
         android:textColor="@android:color/white"
-        android:textSize="30dp"
+        android:textSize="22dp"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
