@@ -64,17 +64,17 @@ public class DroneStateTopBar extends RelativeLayout {
         setBackgroundResource(R.drawable.default_background);
 
         mBattery = findViewById(R.id.tv_state_top_bar_battery);
-        updateBattery();
-
         mSignal = findViewById(R.id.tv_state_top_bar_signal);
-        updateSignal();
-
         mAltitude = findViewById(R.id.tv_state_top_bar_altitude);
         mAltitudeSpeed = findViewById(R.id.tv_state_top_bar_vspeed);
         mDistance = findViewById(R.id.tv_state_top_bar_distance);
         mDistanceSpeed = findViewById(R.id.tv_state_top_bar_hspeed);
         mSatellite = findViewById(R.id.tv_state_top_bar_satellite);
-        updateFlyingState();
+        if (!isInEditMode()) {
+            updateBattery();
+            updateSignal();
+            updateFlyingState();
+        }
     }
 
     private void updateBattery() {
@@ -138,12 +138,16 @@ public class DroneStateTopBar extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setCallbacks();
+        if (!isInEditMode()) {
+            setCallbacks();
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        removeCallbacks();
+        if (!isInEditMode()) {
+            removeCallbacks();
+        }
     }
 }
