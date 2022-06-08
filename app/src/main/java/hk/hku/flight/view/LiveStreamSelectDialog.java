@@ -2,17 +2,18 @@ package hk.hku.flight.view;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,26 +29,37 @@ import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LiveStreamManager;
 import dji.sdk.sdkmanager.LiveVideoBitRateMode;
 import dji.sdk.sdkmanager.LiveVideoResolution;
+import hk.hku.flight.FlightActivity;
 import hk.hku.flight.R;
 import hk.hku.flight.util.DensityUtil;
+import hk.hku.flight.util.SharePreferenceUtil;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
 
 public class LiveStreamSelectDialog extends AlertDialog {
     private static final String TAG = "LiveStreamSelectDialog";
+    private static final String KEY_STREAM_URLS = "KEY_STREAM_URLS";
     private RecyclerView mRecyclerView;
     private LiveStreamAdapter mAdapter;
     private final List<String> mLiveStreamList = new ArrayList<>();
     private String mSelectUrl = null;
+    private LiveStreamManager mLiveStreamManager;
 
     public LiveStreamSelectDialog(Context context) {
         super(context);
-        setOnShowListener(dialog -> init());
-        mLiveStreamList.add("rtmp://192.168.0.105/live/livestream");
+        setOnShowListener(dialog -> initView());
+        initData();
     }
 
+    private void initData() {
+        mLiveStreamList.addAll(SharePreferenceUtil.getList(KEY_STREAM_URLS));
+        String df = "rtmp://192.168.0.105/live/livestream";
+        if (!mLiveStreamList.contains(df)) {
+            mLiveStreamList.add(df);
+        }
+    }
 
-    private void init() {
+    private void initView() {
         setContentView(R.layout.live_stream_select_dialog);
         Window window = getWindow();
         window.setBackgroundDrawable(new ColorDrawable(0));
@@ -60,6 +72,10 @@ public class LiveStreamSelectDialog extends AlertDialog {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mAdapter = new LiveStreamAdapter();
+        mLiveStreamManager = DJISDKManager.getInstance().getLiveStreamManager();
+        if (mLiveStreamManager != null) {
+            mSelectUrl = mLiveStreamManager.getLiveUrl();
+        }
         mRecyclerView.setAdapter(mAdapter);
 
         findViewById(R.id.live_stream_select_ok).setOnClickListener(v -> {
@@ -79,7 +95,7 @@ public class LiveStreamSelectDialog extends AlertDialog {
                     int code = liveStreamManager.startStream();
                     Log.i(TAG, "LiveStreamManager live stream start:" + code);
                     if (code == LiveStreamManager.STATUS_STREAMING) {
-                        ToastUtil.toast( "live start!");
+                        ToastUtil.toast("live start!");
                     } else {
                         ToastUtil.toast(String.format("live start fail(%d)", code));
                     }
@@ -89,6 +105,19 @@ public class LiveStreamSelectDialog extends AlertDialog {
             }
         });
         findViewById(R.id.live_stream_select_cancel).setOnClickListener(v -> dismiss());
+        findViewById(R.id.live_stream_select_dialog_add).setOnClickListener(v -> {
+            InputAlertDialog dialog = new InputAlertDialog(getContext());
+            dialog.setDefaultText("rtmp://");
+            dialog.setTitle("input your rtmp url");
+            dialog.setOnInputCallback(result -> {
+                if (!mLiveStreamList.contains(result)) {
+                    mLiveStreamList.add(result);
+                    SharePreferenceUtil.setList(KEY_STREAM_URLS, mLiveStreamList);
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+            dialog.show();
+        });
     }
 
     private class LiveStreamAdapter extends RecyclerView.Adapter<LiveStreamViewHolder> {
@@ -125,6 +154,19 @@ public class LiveStreamSelectDialog extends AlertDialog {
             mTvUrl.setOnClickListener(v -> {
                 mSelectUrl = url;
                 mAdapter.notifyDataSetChanged();
+            });
+            mTvUrl.setOnLongClickListener(v -> {
+                SpannableString spannableString = new SpannableString("DELETE");
+                spannableString.setSpan(new ForegroundColorSpan(Color.RED), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                new androidx.appcompat.app.AlertDialog.Builder(getContext())
+                        .setTitle("delete url?")
+                        .setPositiveButton(spannableString, (dialog, which) -> {
+                            mLiveStreamList.remove(url);
+                            mAdapter.notifyDataSetChanged();
+                            SharePreferenceUtil.setList(KEY_STREAM_URLS, mLiveStreamList);
+                        })
+                        .setNegativeButton("CANCEL", (dialog, which) -> dialog.dismiss()).show();
+                return true;
             });
             if (mSelectUrl != null && mSelectUrl.equals(url)) {
                 mTvUrl.setBackgroundColor(Color.parseColor("#0061b2"));

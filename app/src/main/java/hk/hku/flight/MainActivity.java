@@ -49,6 +49,7 @@ import hk.hku.flight.modules.BatteryStateMgr;
 import hk.hku.flight.modules.FlyingStateMgr;
 import hk.hku.flight.modules.SignalStateMgr;
 import hk.hku.flight.util.ThreadManager;
+import hk.hku.flight.util.ToastUtil;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -311,9 +312,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void showToast(final String toastMsg) {
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show());
-
+        ToastUtil.toast(toastMsg);
     }
 }

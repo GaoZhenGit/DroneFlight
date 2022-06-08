@@ -15,6 +15,6 @@
         android:paddingRight="15dp"
         android:singleLine="true"
         android:gravity="center"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         tools:text="rtmp://192.168.0.105/live/livestream" />
 </LinearLayout>
