@@ -48,13 +48,14 @@ import dji.sdk.sdkmanager.LDMModuleType;
 import hk.hku.flight.modules.BatteryStateMgr;
 import hk.hku.flight.modules.FlyingStateMgr;
 import hk.hku.flight.modules.SignalStateMgr;
+import hk.hku.flight.util.ConnectionCheckUtil;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private static final String[] REQUIRED_PERMISSION_LIST = new String[] {
+    private static final String[] REQUIRED_PERMISSION_LIST = new String[]{
             Manifest.permission.VIBRATE, // Gimbal rotation
             Manifest.permission.INTERNET, // API requests
             Manifest.permission.ACCESS_WIFI_STATE, // WIFI connected products
@@ -203,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermission() {
+        missingPermission.clear();
         for (String eachPermission : REQUIRED_PERMISSION_LIST) {
             if (ContextCompat.checkSelfPermission(this, eachPermission) != PackageManager.PERMISSION_GRANTED) {
                 missingPermission.add(eachPermission);
@@ -210,11 +212,12 @@ public class MainActivity extends AppCompatActivity {
         }
         // Request for missing permissions
         if (missingPermission.isEmpty()) {
-            ((ImageView)findViewById(R.id.ic_permission)).setImageResource(R.drawable.state_ok);
+            ((ImageView) findViewById(R.id.ic_permission)).setImageResource(R.drawable.state_ok);
         } else {
-            ((ImageView)findViewById(R.id.ic_permission)).setImageResource(R.drawable.state_error);
+            ((ImageView) findViewById(R.id.ic_permission)).setImageResource(R.drawable.state_error);
         }
     }
+
     private void requestNeedPermission() {
         checkPermission();
         if (missingPermission.isEmpty()) {
@@ -226,51 +229,39 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_PERMISSION_CODE);
         }
     }
+
     private void checkRegister() {
         if (isRegistrationInProgress.get()) {
-            ((ImageView)findViewById(R.id.ic_register)).setImageResource(R.drawable.state_ok);
+            ((ImageView) findViewById(R.id.ic_register)).setImageResource(R.drawable.state_ok);
         } else {
-            ((ImageView)findViewById(R.id.ic_register)).setImageResource(R.drawable.state_error);
+            ((ImageView) findViewById(R.id.ic_register)).setImageResource(R.drawable.state_error);
         }
     }
+
     private void checkConnect() {
         Log.i(TAG, "checkConnect");
-        BaseProduct product = DroneApplication.getProductInstance();
-        if (product == null) {
-            Log.i(TAG, "no product connect");
-            ((ImageView)findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_error);
-            ((ImageView)findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_error);
-            findViewById(R.id.btn_start_fly).setEnabled(false);
-            return;
-        }
-        if (product.isConnected()) {
-            Log.i(TAG, "product connect");
-            ((ImageView)findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_ok);
-            ((ImageView)findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_ok);
-            findViewById(R.id.btn_start_fly).setEnabled(true);
+        switch (ConnectionCheckUtil.checkConnection()) {
+            case ConnectionCheckUtil.RC_DRONE:
+                ((ImageView) findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_ok);
+                ((ImageView) findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_ok);
+                findViewById(R.id.btn_start_fly).setEnabled(true);
 
-            mHandler.postDelayed(() -> BatteryStateMgr.getInstance().addBatteryCallback(), 1000);
-            mHandler.postDelayed(() -> SignalStateMgr.getInstance().addSignalCallback(), 1000);
-            mHandler.postDelayed(() -> FlyingStateMgr.getInstance().addFlyingStateCallback(), 1000);
-            return;
+                mHandler.postDelayed(() -> BatteryStateMgr.getInstance().addBatteryCallback(), 1000);
+                mHandler.postDelayed(() -> SignalStateMgr.getInstance().addSignalCallback(), 1000);
+                mHandler.postDelayed(() -> FlyingStateMgr.getInstance().addFlyingStateCallback(), 1000);
+                break;
+            case ConnectionCheckUtil.ONLY_RC:
+                ((ImageView) findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_error);
+                ((ImageView) findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_ok);
+                findViewById(R.id.btn_start_fly).setEnabled(false);
+                break;
+            case ConnectionCheckUtil.NO_CONNECTION:
+            default:
+                ((ImageView) findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_error);
+                ((ImageView) findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_error);
+                findViewById(R.id.btn_start_fly).setEnabled(false);
+                break;
         }
-        if (product instanceof Aircraft) {
-            Aircraft aircraft = (Aircraft) product;
-            if (aircraft.getRemoteController() != null && aircraft.getRemoteController().isConnected()) {
-                Log.i(TAG, "only RC connect");
-                ((ImageView)findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_error);
-                ((ImageView)findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_ok);
-            } else {
-                Log.i(TAG, "no product connect 2");
-                ((ImageView)findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_error);
-                ((ImageView)findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_error);
-            }
-        } else  {
-            Log.i(TAG, "no product connect 3");
-            ((ImageView)findViewById(R.id.ic_drone)).setImageResource(R.drawable.state_error);
-            ((ImageView)findViewById(R.id.ic_RC)).setImageResource(R.drawable.state_error);
-        }
-        findViewById(R.id.btn_start_fly).setEnabled(false);
     }
 
     /**

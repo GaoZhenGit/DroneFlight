@@ -39,7 +39,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="landscape"
-            android:launchMode="singleTop">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
