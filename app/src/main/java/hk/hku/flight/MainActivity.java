@@ -305,4 +305,15 @@ public class MainActivity extends AppCompatActivity {
     private void showToast(final String toastMsg) {
         ToastUtil.toast(toastMsg);
     }
+
+    private long mLastBackPressTime = 0;
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - mLastBackPressTime > 2000) {
+            showToast("press home again to exit");
+            mLastBackPressTime = System.currentTimeMillis();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
