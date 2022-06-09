@@ -120,3 +120,7 @@
 -keep class dji.sdk.utmiss.** { *; }
 -keep class utmisslib.** { *; }
 #<------------ utmiss config end------------>
+
+
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}

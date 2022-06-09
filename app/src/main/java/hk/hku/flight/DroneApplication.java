@@ -5,6 +5,8 @@ import android.content.Context;
 
 import androidx.multidex.MultiDex;
 
+import com.tencent.bugly.crashreport.CrashReport;
+
 import dji.sdk.base.BaseProduct;
 import dji.sdk.products.Aircraft;
 import dji.sdk.products.HandHeld;
@@ -71,5 +73,11 @@ public class DroneApplication extends Application {
         MultiDex.install(this);
         com.secneo.sdk.Helper.install(this);
         app = this;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        CrashReport.initCrashReport(getApplicationContext(), "0f0a0b9a5e", true);
     }
 }
