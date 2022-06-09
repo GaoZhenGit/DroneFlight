@@ -140,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
     private void onLogin(String email, String password) {
         Log.i(TAG, "onLogin:" + email + ":" + password);
         ToastUtil.toast("login...");
+        mBtnNext.setEnabled(false);
         NetworkManager.getInstance().login(email, password, new NetworkManager.BaseCallback<NetworkManager.LoginResponse>() {
             @Override
             public void onSuccess(NetworkManager.LoginResponse data) {
@@ -159,6 +160,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFail(String msg) {
                 ToastUtil.toast("login fail:" + msg);
+                ThreadManager.getInstance().runOnUiThread(() -> checkInput());
             }
         });
     }
@@ -166,12 +168,14 @@ public class LoginActivity extends AppCompatActivity {
     private void onRegister(String email, String password) {
         Log.i(TAG, "onRegister:" + email + ":" + password);
         ToastUtil.toast("creating account...");
+        mBtnNext.setEnabled(false);
         NetworkManager.getInstance().register(email, password, new NetworkManager.BaseCallback<NetworkManager.RegisterResponse>() {
             @Override
             public void onSuccess(NetworkManager.RegisterResponse data) {
                 Log.i(TAG, "onRegister success");
                 ThreadManager.getInstance().runOnUiThread(() -> {
                     changeMode(false);
+                    checkInput();
                     ToastUtil.toast("register success");
                 });
             }
@@ -179,6 +183,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFail(String msg) {
                 ToastUtil.toast("register fail:" + msg);
+                ThreadManager.getInstance().runOnUiThread(() -> checkInput());
             }
         });
     }
