@@ -45,6 +45,7 @@ import dji.sdk.sdkmanager.DJISDKInitEvent;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LDMModule;
 import dji.sdk.sdkmanager.LDMModuleType;
+import hk.hku.flight.account.LoginActivity;
 import hk.hku.flight.modules.BatteryStateMgr;
 import hk.hku.flight.modules.FlyingStateMgr;
 import hk.hku.flight.modules.SignalStateMgr;
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, FlightActivity.class);
             startActivity(intent);
         });
+        findViewById(R.id.btn_login).setOnClickListener(v -> startActivity(new Intent(MainActivity.this, LoginActivity.class)));
     }
 
     private void startSDKRegistration() {
