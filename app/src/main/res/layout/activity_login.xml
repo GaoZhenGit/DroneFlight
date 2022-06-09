@@ -42,6 +42,23 @@
             android:textSize="16dp" />
 
         <EditText
+            android:id="@+id/login_name"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/default_background_round"
+            android:gravity="center"
+            android:hint="Account name"
+            android:imeOptions="actionDone|flagNoExtractUi"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16dp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <EditText
             android:id="@+id/login_email"
             android:layout_width="300dp"
             android:layout_height="45dp"
@@ -88,9 +105,9 @@
         <TextView
             android:id="@+id/login_change_mode"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="5dp"
-            android:layout_height="wrap_content"
             android:text="New user? Create an account."
             android:textColor="@android:color/white" />
     </LinearLayout>

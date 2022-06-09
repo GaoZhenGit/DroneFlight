@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     private final String REGEX = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
     private final Pattern mPatten = Pattern.compile(REGEX);
     private View mBtnNext;
+    private EditText mNameField;
     private EditText mEmailField;
     private EditText mPasswordField;
     private TextView mTitle;
@@ -72,11 +73,15 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordField = findViewById(R.id.login_password);
         mPasswordField.addTextChangedListener(mTextWatcher);
 
+        mNameField = findViewById(R.id.login_name);
+        mNameField.addTextChangedListener(mTextWatcher);
+
         mBtnNext.setOnClickListener(v -> {
             String email = mEmailField.getText().toString();
             String password = mPasswordField.getText().toString();
             if (mIsRegisterMode) {
-                onRegister(email, password);
+                String name = mNameField.getText().toString();
+                onRegister(name, email, password);
             } else {
                 onLogin(email, password);
             }
@@ -114,6 +119,16 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             mPasswordField.setBackgroundResource(R.drawable.default_background_round);
         }
+
+        if (mIsRegisterMode) {
+            String name = mNameField.getText().toString();
+            if (TextUtils.isEmpty(name)) {
+                inputsValid = false;
+                mNameField.setBackgroundResource(R.drawable.invalid_input);
+            } else {
+                mNameField.setBackgroundResource(R.drawable.default_background_round);
+            }
+        }
         mBtnNext.setEnabled(inputsValid);
     }
 
@@ -131,9 +146,11 @@ public class LoginActivity extends AppCompatActivity {
         if (isRegister) {
             mTitle.setText("Register");
             mChangeModeBtn.setVisibility(View.GONE);
+            mNameField.setVisibility(View.VISIBLE);
         } else {
             mTitle.setText("Login");
             mChangeModeBtn.setVisibility(View.VISIBLE);
+            mNameField.setVisibility(View.GONE);
         }
     }
 
@@ -165,24 +182,25 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void onRegister(String email, String password) {
+    private void onRegister(String name, String email, String password) {
         Log.i(TAG, "onRegister:" + email + ":" + password);
         ToastUtil.toast("creating account...");
         mBtnNext.setEnabled(false);
-        NetworkManager.getInstance().register(email, password, new NetworkManager.BaseCallback<NetworkManager.RegisterResponse>() {
+        NetworkManager.getInstance().register(name, email, password, new NetworkManager.BaseCallback<NetworkManager.RegisterResponse>() {
             @Override
             public void onSuccess(NetworkManager.RegisterResponse data) {
                 Log.i(TAG, "onRegister success");
                 ThreadManager.getInstance().runOnUiThread(() -> {
                     changeMode(false);
                     checkInput();
-                    ToastUtil.toast("register success");
+                    ToastUtil.toast("creating account success");
                 });
             }
 
             @Override
             public void onFail(String msg) {
-                ToastUtil.toast("register fail:" + msg);
+                Log.i(TAG, "onRegister fail");
+                ToastUtil.toast("creating account fail:" + msg);
                 ThreadManager.getInstance().runOnUiThread(() -> checkInput());
             }
         });
@@ -190,7 +208,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public static void checkLogin(Activity activity, Runnable runnable) {
         if (AccountManager.getInstance().isLogin()) {
-            Log.i(TAG, "checkLogin true");
+            String name = AccountManager.getInstance().getUserName();
+            Log.i(TAG, "checkLogin as:" + name);
             if (runnable != null) {
                 runnable.run();
             }

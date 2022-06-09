@@ -60,12 +60,12 @@ public class NetworkManager {
 
     }
 
-    public void register(String name, String email, BaseCallback<RegisterResponse> callback) {
+    public void register(String name, String email, String password, BaseCallback<RegisterResponse> callback) {
         Map<String, String> userMap = new HashMap<>();
         userMap.put("name", name);
         userMap.put("email", email);
 //        userMap.put("avatar", avatar);
-//        userMap.put("password", psw);
+        userMap.put("password", password);
         userMap.put("desc", "");
         Map<String, Object> reqMap = new HashMap<>();
         reqMap.put("user", userMap);
