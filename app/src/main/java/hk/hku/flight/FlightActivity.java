@@ -52,6 +52,9 @@ public class FlightActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flight);
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        WindowManager.LayoutParams lp = window.getAttributes();
+        lp.screenBrightness = 1;
+        window.setAttributes(lp);
         initView();
         initLiveStream();
     }
