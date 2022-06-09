@@ -22,10 +22,12 @@ android {
 
     buildTypes {
         debug {
+            buildConfigField("String", "HTTP_BASE", '"http://3.88.236.75:8080/"')
             multiDexKeepProguard file('multidex-config.pro')
         }
         release {
             minifyEnabled false
+            buildConfigField("String", "HTTP_BASE", '"http://3.88.236.75:8080/"')
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             multiDexKeepProguard file('multidex-config.pro')
         }
@@ -75,4 +77,8 @@ dependencies {
     implementation 'com.tencent.bugly:crashreport:latest.release'
     implementation 'org.apache.commons:commons-math3:3.6.1'
     implementation 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
 }

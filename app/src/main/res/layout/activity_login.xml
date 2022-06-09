@@ -30,22 +30,16 @@
             android:text="Login"
             android:textColor="@android:color/white"
             android:textSize="25dp"
-            android:textStyle="bold"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/login_sub_title"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:text="Input your email address"
+            android:text="Input your email and password"
             android:textColor="@android:color/white"
-            android:textSize="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_title" />
+            android:textSize="16dp" />
 
         <EditText
             android:id="@+id/login_email"
@@ -54,16 +48,29 @@
             android:layout_marginTop="20dp"
             android:background="@drawable/default_background_round"
             android:gravity="center"
-            android:hint="email"
+            android:hint="Email"
             android:imeOptions="actionDone|flagNoExtractUi"
             android:padding="5dp"
             android:singleLine="true"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/darker_gray"
-            android:textSize="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_sub_title" />
+            android:textSize="16dp" />
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/default_background_round"
+            android:gravity="center"
+            android:hint="Password"
+            android:imeOptions="actionDone|flagNoExtractUi"
+            android:inputType="textPassword"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16dp" />
 
         <TextView
             android:id="@+id/login_ok"
@@ -76,10 +83,15 @@
             android:padding="5dp"
             android:text="Next"
             android:textColor="@android:color/white"
-            android:textSize="20dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/login_email" />
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/login_change_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="New user? Create an account."
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
