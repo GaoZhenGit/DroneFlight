@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import hk.hku.flight.BuildConfig;
+import hk.hku.flight.account.User;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -39,7 +40,7 @@ public class NetworkManager {
     }
 
     public static class LoginResponse extends BaseResponse {
-
+        public User user;
     }
 
     public void login(String email, String password, BaseCallback<LoginResponse> callback) {

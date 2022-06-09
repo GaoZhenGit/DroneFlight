@@ -2,6 +2,8 @@ package hk.hku.flight.account;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,6 +24,7 @@ import java.util.regex.Pattern;
 
 import hk.hku.flight.R;
 import hk.hku.flight.util.NetworkManager;
+import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
 
 public class LoginActivity extends AppCompatActivity {
@@ -70,7 +73,6 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordField.addTextChangedListener(mTextWatcher);
 
         mBtnNext.setOnClickListener(v -> {
-            ToastUtil.toast("login...");
             String email = mEmailField.getText().toString();
             String password = mPasswordField.getText().toString();
             if (mIsRegisterMode) {
@@ -137,35 +139,59 @@ public class LoginActivity extends AppCompatActivity {
 
     private void onLogin(String email, String password) {
         Log.i(TAG, "onLogin:" + email + ":" + password);
+        ToastUtil.toast("login...");
         NetworkManager.getInstance().login(email, password, new NetworkManager.BaseCallback<NetworkManager.LoginResponse>() {
             @Override
             public void onSuccess(NetworkManager.LoginResponse data) {
-
+                Log.i(TAG, "onLogin success");
+                AccountManager.getInstance().setLocalUserInfo(
+                        data.user.id,
+                        data.user.name,
+                        data.user.email,
+                        data.user.avatar);
+                ThreadManager.getInstance().runOnUiThread(() -> {
+                    ToastUtil.toast("login success");
+                    setResult(RESULT_OK);
+                    finish();
+                });
             }
 
             @Override
             public void onFail(String msg) {
-
+                ToastUtil.toast("login fail:" + msg);
             }
         });
     }
 
     private void onRegister(String email, String password) {
         Log.i(TAG, "onRegister:" + email + ":" + password);
+        ToastUtil.toast("creating account...");
         NetworkManager.getInstance().register(email, password, new NetworkManager.BaseCallback<NetworkManager.RegisterResponse>() {
             @Override
             public void onSuccess(NetworkManager.RegisterResponse data) {
-
+                Log.i(TAG, "onRegister success");
+                ThreadManager.getInstance().runOnUiThread(() -> {
+                    changeMode(false);
+                    ToastUtil.toast("register success");
+                });
             }
 
             @Override
             public void onFail(String msg) {
-
+                ToastUtil.toast("register fail:" + msg);
             }
         });
     }
 
-    public static void checkLogin(Runnable runnable) {
-
+    public static void checkLogin(Activity activity, Runnable runnable) {
+        if (AccountManager.getInstance().isLogin()) {
+            Log.i(TAG, "checkLogin true");
+            if (runnable != null) {
+                runnable.run();
+            }
+        } else {
+            Log.i(TAG, "checkLogin false");
+            activity.startActivity(new Intent(activity, LoginActivity.class));
+        }
     }
 }

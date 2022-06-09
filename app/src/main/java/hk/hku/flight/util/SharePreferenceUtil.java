@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import hk.hku.flight.DroneApplication;
 
@@ -14,6 +15,15 @@ public class SharePreferenceUtil {
     public static void set(String key, String value) {
         SharedPreferences sp = DroneApplication.getInstance().getSharedPreferences(SP_KEY_DEFAULT, Context.MODE_PRIVATE);
         sp.edit().putString(key, value).apply();
+    }
+
+    public static void put(Map<String, String> map) {
+        SharedPreferences sp = DroneApplication.getInstance().getSharedPreferences(SP_KEY_DEFAULT, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            editor.putString(entry.getKey(), entry.getValue());
+        }
+        editor.apply();
     }
 
     public static void setList(String key, List<String> values) {

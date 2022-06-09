@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, FlightActivity.class);
             startActivity(intent);
         });
-        findViewById(R.id.btn_login).setOnClickListener(v -> startActivity(new Intent(MainActivity.this, LoginActivity.class)));
+        findViewById(R.id.btn_login).setOnClickListener(v -> LoginActivity.checkLogin(MainActivity.this, null));
     }
 
     private void startSDKRegistration() {
