@@ -45,6 +45,7 @@ import dji.sdk.sdkmanager.DJISDKInitEvent;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LDMModule;
 import dji.sdk.sdkmanager.LDMModuleType;
+import hk.hku.flight.account.AccountManager;
 import hk.hku.flight.account.LoginActivity;
 import hk.hku.flight.modules.BatteryStateMgr;
 import hk.hku.flight.modules.FlyingStateMgr;
@@ -52,6 +53,7 @@ import hk.hku.flight.modules.SignalStateMgr;
 import hk.hku.flight.util.ConnectionCheckUtil;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
+import hk.hku.flight.view.NetImageView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     };
     private List<String> missingPermission = new ArrayList<>();
     private AtomicBoolean isRegistrationInProgress = new AtomicBoolean(false);
+    private NetImageView mMainAvatar;
+    private TextView mMainName;
     private static final int REQUEST_PERMISSION_CODE = 12345;
 
     private final BroadcastReceiver mConnectionReceiver = new BroadcastReceiver() {
@@ -131,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, FlightActivity.class);
             startActivity(intent);
         });
+        mMainAvatar = findViewById(R.id.main_avatar);
+        mMainName = findViewById(R.id.main_user_name);
+        checkLogin();
         findViewById(R.id.btn_login).setOnClickListener(v -> LoginActivity.checkLogin(MainActivity.this, null));
     }
 
@@ -284,6 +291,24 @@ public class MainActivity extends AppCompatActivity {
         }
         // If there is enough permission, we will start the registration
         checkPermission();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkLogin();
+    }
+
+    private void checkLogin() {
+        if (AccountManager.getInstance().isLogin()) {
+            if (mMainAvatar != null) {
+                mMainAvatar.loadRound(AccountManager.getInstance().getAvatar());
+            }
+
+            if (mMainName != null) {
+                mMainName.setText(AccountManager.getInstance().getUserName());
+            }
+        }
     }
 
     private void setInfoCallback() {

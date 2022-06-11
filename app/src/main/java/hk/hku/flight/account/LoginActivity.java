@@ -1,9 +1,11 @@
 package hk.hku.flight.account;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,24 +21,31 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import hk.hku.flight.R;
+import hk.hku.flight.util.FetchImageUtil;
 import hk.hku.flight.util.NetworkManager;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
+import hk.hku.flight.view.NetImageView;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private final String REGEX = "^\\w+((-\\w+)|(\\.\\w+))*@\\w+(\\.\\w{2,3}){1,3}$";
     private final Pattern mPatten = Pattern.compile(REGEX);
+    private final FetchImageUtil mFetchImageUtil = new FetchImageUtil();
+    private Bitmap mAvatarBitmap;
+    private File mAvatarCacheFile;
     private View mBtnNext;
     private EditText mNameField;
     private EditText mEmailField;
     private EditText mPasswordField;
     private TextView mTitle;
     private TextView mChangeModeBtn;
+    private NetImageView mAvatar;
     private boolean mIsRegisterMode = false;
     private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
@@ -58,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);//这行代码一定要在setContentView之前，不然会闪退
         setContentView(R.layout.activity_login);
         Window window = getWindow();
@@ -97,6 +107,14 @@ public class LoginActivity extends AppCompatActivity {
         ForegroundColorSpan span = new ForegroundColorSpan(Color.parseColor("#0000cc"));
         changeModeWord.setSpan(span, word.indexOf("Create"), word.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         mChangeModeBtn.setText(changeModeWord);
+
+        mAvatar = findViewById(R.id.login_avatar);
+        mAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFetchImageUtil.fetchImage(LoginActivity.this);
+            }
+        });
     }
 
     private void checkInput() {
@@ -147,10 +165,13 @@ public class LoginActivity extends AppCompatActivity {
             mTitle.setText("Register");
             mChangeModeBtn.setVisibility(View.GONE);
             mNameField.setVisibility(View.VISIBLE);
+            mAvatar.setVisibility(View.VISIBLE);
+            mAvatar.setImageResource(R.drawable.default_avatar);
         } else {
             mTitle.setText("Login");
             mChangeModeBtn.setVisibility(View.VISIBLE);
             mNameField.setVisibility(View.GONE);
+            mAvatar.setVisibility(View.GONE);
         }
     }
 
@@ -186,7 +207,28 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(TAG, "onRegister:" + email + ":" + password);
         ToastUtil.toast("creating account...");
         mBtnNext.setEnabled(false);
-        NetworkManager.getInstance().register(name, email, password, new NetworkManager.BaseCallback<NetworkManager.RegisterResponse>() {
+        if (mAvatarCacheFile == null) {
+            Log.i(TAG, "not upload image success");
+            onRegisterInner(name, email, password, null);
+            return;
+        }
+        NetworkManager.getInstance().uploadImage(mAvatarCacheFile, new NetworkManager.BaseCallback<NetworkManager.ImageRsp>() {
+            @Override
+            public void onSuccess(NetworkManager.ImageRsp data) {
+                Log.i(TAG, "upload image success");
+                onRegisterInner(name, email, password, NetworkManager.baseUrl + data.urlSuffix);
+            }
+
+            @Override
+            public void onFail(String msg) {
+                Log.i(TAG, "upload image fail");
+                onRegisterInner(name, email, password, null);
+            }
+        });
+    }
+
+    private void onRegisterInner(String name, String email, String password, String avatar) {
+        NetworkManager.getInstance().register(name, email, password, avatar, new NetworkManager.BaseCallback<NetworkManager.RegisterResponse>() {
             @Override
             public void onSuccess(NetworkManager.RegisterResponse data) {
                 Log.i(TAG, "onRegister success");
@@ -217,5 +259,19 @@ public class LoginActivity extends AppCompatActivity {
             Log.i(TAG, "checkLogin false");
             activity.startActivity(new Intent(activity, LoginActivity.class));
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mAvatarBitmap = mFetchImageUtil.getBitmapFromResult(this, requestCode, resultCode, data);
+        mAvatarCacheFile = mFetchImageUtil.saveImageToDiskCache(mAvatarBitmap);
+        mAvatar.setImageBitmap(mAvatarBitmap);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i(TAG, "onDestroy");
+        super.onDestroy();
     }
 }

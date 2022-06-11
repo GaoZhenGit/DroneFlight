@@ -147,17 +147,22 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginBottom="25dp"
+        android:background="@drawable/default_background_round"
         android:gravity="center"
+        android:padding="5dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent">
 
-        <ImageView
+        <hk.hku.flight.view.NetImageView
+            android:scaleType="centerCrop"
+            android:id="@+id/main_avatar"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/account" />
 
         <TextView
+            android:id="@+id/main_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"

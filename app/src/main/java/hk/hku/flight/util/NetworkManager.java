@@ -2,12 +2,14 @@ package hk.hku.flight.util;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import hk.hku.flight.BuildConfig;
 import hk.hku.flight.account.User;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,7 +17,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public class NetworkManager {
     public static final String baseUrl = BuildConfig.HTTP_BASE;
@@ -39,6 +43,26 @@ public class NetworkManager {
         mService = retrofit.create(NetworkService.class);
     }
 
+    public static class ImageRsp extends BaseResponse {
+        public String urlSuffix;
+
+        @Override
+        public String toString() {
+            return "ImageRsp{" +
+                    "result='" + result + '\'' +
+                    ", failReason='" + failReason + '\'' +
+                    ", urlSuffix='" + urlSuffix + '\'' +
+                    '}';
+        }
+    }
+
+    public void uploadImage(File imageFile, BaseCallback<ImageRsp> callback) {
+        String fileName = imageFile.getName();
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), imageFile);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("fileName", fileName, requestFile);
+        mService.imageUpload(part).enqueue(callback);
+    }
+
     public static class LoginResponse extends BaseResponse {
         public User user;
     }
@@ -60,11 +84,11 @@ public class NetworkManager {
 
     }
 
-    public void register(String name, String email, String password, BaseCallback<RegisterResponse> callback) {
+    public void register(String name, String email, String password, String avatar, BaseCallback<RegisterResponse> callback) {
         Map<String, String> userMap = new HashMap<>();
         userMap.put("name", name);
         userMap.put("email", email);
-//        userMap.put("avatar", avatar);
+        userMap.put("avatar", avatar);
         userMap.put("password", password);
         userMap.put("desc", "");
         Map<String, Object> reqMap = new HashMap<>();
@@ -82,6 +106,10 @@ public class NetworkManager {
 
         @POST("login")
         Call<LoginResponse> login(@Body RequestBody body);
+
+        @POST("imageUpload")
+        @Multipart
+        Call<ImageRsp> imageUpload(@Part MultipartBody.Part imgs);
     }
 
     public static class BaseResponse {

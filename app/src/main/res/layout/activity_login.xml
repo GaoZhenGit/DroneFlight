@@ -13,6 +13,7 @@
         android:background="@drawable/light_background" />
 
     <LinearLayout
+        android:id="@+id/login_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -56,7 +57,7 @@
             android:textColorHint="@android:color/darker_gray"
             android:textSize="16dp"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <EditText
             android:id="@+id/login_email"
@@ -111,5 +112,16 @@
             android:text="New user? Create an account."
             android:textColor="@android:color/white" />
     </LinearLayout>
+
+    <hk.hku.flight.view.NetImageView
+        android:id="@+id/login_avatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        app:defaultImageRes="@drawable/default_avatar"
+        app:layout_constraintRight_toRightOf="@id/login_container"
+        app:layout_constraintTop_toTopOf="@id/login_container"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
