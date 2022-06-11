@@ -31,6 +31,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
+            android:name=".account.AccountActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+        <activity
             android:name=".account.LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
@@ -47,9 +53,9 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:launchMode="singleTask"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

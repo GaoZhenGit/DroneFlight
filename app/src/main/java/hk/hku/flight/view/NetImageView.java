@@ -59,6 +59,10 @@ public class NetImageView extends androidx.appcompat.widget.AppCompatImageView {
             ta.recycle();
             postInvalidate();
         }
+
+        if (isInEditMode()) {
+            setImageResource(R.drawable.default_avatar);
+        }
     }
 
     public void load(String url) {

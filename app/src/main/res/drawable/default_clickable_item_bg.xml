@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 标签的背景 label_bg -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 标签选中时的背景 -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#D0D0D0" />
+        </shape>
+    </item>
+    <!-- 标签的正常背景 -->
+    <item>
+        <shape>
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+</selector>

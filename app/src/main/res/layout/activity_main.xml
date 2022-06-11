@@ -159,6 +159,7 @@
             android:id="@+id/main_avatar"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            app:defaultImageRes="@drawable/default_avatar"
             android:src="@drawable/account" />
 
         <TextView

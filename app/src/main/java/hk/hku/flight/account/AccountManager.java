@@ -1,8 +1,11 @@
 package hk.hku.flight.account;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +14,7 @@ import hk.hku.flight.DroneApplication;
 import hk.hku.flight.util.SharePreferenceUtil;
 
 public class AccountManager {
+    private static final String TAG = "AccountManager";
     private static final String KEY_UID = "KEY_UID";
     private static final String KEY_USER_NAME = "KEY_USER_NAME";
     private static final String KEY_EMAIL = "KEY_EMAIL";
@@ -74,5 +78,18 @@ public class AccountManager {
         map.put(KEY_EMAIL, "");
         map.put(KEY_AVATAR, "");
         SharePreferenceUtil.put(map);
+    }
+
+    public void checkLogin(Activity activity, Runnable runnable) {
+        if (isLogin()) {
+            String name = AccountManager.getInstance().getUserName();
+            Log.i(TAG, "checkLogin as:" + name);
+            if (runnable != null) {
+                runnable.run();
+            }
+        } else {
+            Log.i(TAG, "checkLogin false");
+            activity.startActivity(new Intent(activity, LoginActivity.class));
+        }
     }
 }

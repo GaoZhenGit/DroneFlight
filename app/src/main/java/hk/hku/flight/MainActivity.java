@@ -45,11 +45,13 @@ import dji.sdk.sdkmanager.DJISDKInitEvent;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LDMModule;
 import dji.sdk.sdkmanager.LDMModuleType;
+import hk.hku.flight.account.AccountActivity;
 import hk.hku.flight.account.AccountManager;
 import hk.hku.flight.account.LoginActivity;
 import hk.hku.flight.modules.BatteryStateMgr;
 import hk.hku.flight.modules.FlyingStateMgr;
 import hk.hku.flight.modules.SignalStateMgr;
+import hk.hku.flight.util.ClickUtil;
 import hk.hku.flight.util.ConnectionCheckUtil;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
@@ -132,13 +134,21 @@ public class MainActivity extends AppCompatActivity {
             if (!v.isEnabled()) {
                 return;
             }
+            if (ClickUtil.isDoubleClickInSec()) {
+                return;
+            }
             Intent intent = new Intent(MainActivity.this, FlightActivity.class);
             startActivity(intent);
         });
         mMainAvatar = findViewById(R.id.main_avatar);
         mMainName = findViewById(R.id.main_user_name);
         checkLogin();
-        findViewById(R.id.btn_login).setOnClickListener(v -> LoginActivity.checkLogin(MainActivity.this, null));
+        findViewById(R.id.btn_login).setOnClickListener(v -> {
+            if (ClickUtil.isDoubleClickInSec()) {
+                return;
+            }
+            AccountManager.getInstance().checkLogin(MainActivity.this, () -> startActivity(new Intent(MainActivity.this, AccountActivity.class)));
+        });
     }
 
     private void startSDKRegistration() {
@@ -300,14 +310,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkLogin() {
+        if (mMainAvatar == null || mMainName == null) {
+            return;
+        }
         if (AccountManager.getInstance().isLogin()) {
-            if (mMainAvatar != null) {
-                mMainAvatar.loadRound(AccountManager.getInstance().getAvatar());
-            }
-
-            if (mMainName != null) {
-                mMainName.setText(AccountManager.getInstance().getUserName());
-            }
+            mMainAvatar.loadRound(AccountManager.getInstance().getAvatar());
+            mMainName.setText(AccountManager.getInstance().getUserName());
+        } else {
+            mMainAvatar.load(null);
+            mMainName.setText("Account");
         }
     }
 
@@ -334,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private long mLastBackPressTime = 0;
+
     @Override
     public void onBackPressed() {
         if (System.currentTimeMillis() - mLastBackPressTime > 2000) {
