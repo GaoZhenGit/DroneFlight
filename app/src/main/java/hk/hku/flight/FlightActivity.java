@@ -14,6 +14,8 @@ import dji.sdk.camera.VideoFeeder;
 import dji.sdk.products.Aircraft;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LiveStreamManager;
+import hk.hku.flight.account.AccountManager;
+import hk.hku.flight.util.NetworkManager;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
 import hk.hku.flight.util.VideoFeedView;
@@ -75,11 +77,26 @@ public class FlightActivity extends AppCompatActivity {
             if (mLiveStreamManager != null && mLiveStreamManager.isStreaming()) {
                 new AlertDialog.Builder(FlightActivity.this)
                         .setTitle("stop live?")
-                        .setPositiveButton("STOP!", (dialog, which) -> mLiveStreamManager.stopStream())
+                        .setPositiveButton("STOP!", (dialog, which) -> {
+                            NetworkManager.getInstance().stopLive(mLiveStreamManager.getLiveUrl(), new NetworkManager.BaseCallback<NetworkManager.BaseResponse>() {
+                                @Override
+                                public void onSuccess(NetworkManager.BaseResponse data) {
+                                    Log.i(TAG, "stopLive success");
+                                }
+
+                                @Override
+                                public void onFail(String msg) {
+                                    Log.i(TAG, "stopLive fail:" + msg);
+                                }
+                            });
+                            mLiveStreamManager.stopStream();
+                        })
                         .setNegativeButton("DON'T STOP", (dialog, which) -> dialog.dismiss()).show();
             } else {
-                mLiveStreamSelectDialog = new LiveStreamSelectDialog(FlightActivity.this);
-                mLiveStreamSelectDialog.show();
+                AccountManager.getInstance().checkLogin(FlightActivity.this, () -> {
+                    mLiveStreamSelectDialog = new LiveStreamSelectDialog(FlightActivity.this);
+                    mLiveStreamSelectDialog.show();
+                });
             }
         });
     }

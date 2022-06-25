@@ -58,7 +58,7 @@ public class LiveStreamSelectDialog extends AlertDialog {
 
     private void initData() {
         mLiveStreamList.addAll(SharePreferenceUtil.getList(KEY_STREAM_URLS));
-        String df = "rtmp://192.168.0.105/live/livestream";
+        String df = "rtmp://18.166.154.193/live/" + AccountManager.getInstance().getUid().hashCode();
         if (!mLiveStreamList.contains(df)) {
             mLiveStreamList.add(df);
         }

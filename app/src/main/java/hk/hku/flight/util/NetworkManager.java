@@ -103,7 +103,7 @@ public class NetworkManager {
 
     public void startLive(String streamUrl, BaseCallback<BaseResponse> callback) {
         Map<String, String> userMap = new HashMap<>();
-        userMap.put("uid", AccountManager.getInstance().getUid());
+        userMap.put("id", AccountManager.getInstance().getUid());
         Map<String, Object> reqMap = new HashMap<>();
         reqMap.put("user", userMap);
         reqMap.put("streamUrl", streamUrl);
@@ -111,6 +111,19 @@ public class NetworkManager {
         String reqJson = gson.toJson(reqMap);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
         Call<BaseResponse> call = mService.startLive(requestBody);
+        call.enqueue(callback);
+    }
+
+    public void stopLive(String streamUrl, BaseCallback<BaseResponse> callback) {
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("id", AccountManager.getInstance().getUid());
+        Map<String, Object> reqMap = new HashMap<>();
+        reqMap.put("user", userMap);
+        reqMap.put("streamUrl", streamUrl);
+        Gson gson = new Gson();
+        String reqJson = gson.toJson(reqMap);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
+        Call<BaseResponse> call = mService.stopLive(requestBody);
         call.enqueue(callback);
     }
 
@@ -127,6 +140,9 @@ public class NetworkManager {
 
         @POST("startLive")
         Call<BaseResponse> startLive(@Body RequestBody body);
+
+        @POST("stopLive")
+        Call<BaseResponse> stopLive(@Body RequestBody body);
     }
 
     public static class BaseResponse {
