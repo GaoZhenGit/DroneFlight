@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import hk.hku.flight.BuildConfig;
+import hk.hku.flight.account.AccountManager;
 import hk.hku.flight.account.User;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -100,6 +101,19 @@ public class NetworkManager {
         call.enqueue(callback);
     }
 
+    public void startLive(String streamUrl, BaseCallback<BaseResponse> callback) {
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("uid", AccountManager.getInstance().getUid());
+        Map<String, Object> reqMap = new HashMap<>();
+        reqMap.put("user", userMap);
+        reqMap.put("streamUrl", streamUrl);
+        Gson gson = new Gson();
+        String reqJson = gson.toJson(reqMap);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
+        Call<BaseResponse> call = mService.startLive(requestBody);
+        call.enqueue(callback);
+    }
+
     public interface NetworkService {
         @POST("register")
         Call<RegisterResponse> register(@Body RequestBody body);
@@ -110,6 +124,9 @@ public class NetworkManager {
         @POST("imageUpload")
         @Multipart
         Call<ImageRsp> imageUpload(@Part MultipartBody.Part imgs);
+
+        @POST("startLive")
+        Call<BaseResponse> startLive(@Body RequestBody body);
     }
 
     public static class BaseResponse {

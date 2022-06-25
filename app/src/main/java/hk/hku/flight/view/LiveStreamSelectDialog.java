@@ -32,6 +32,7 @@ import dji.sdk.sdkmanager.LiveVideoResolution;
 import hk.hku.flight.FlightActivity;
 import hk.hku.flight.R;
 import hk.hku.flight.util.DensityUtil;
+import hk.hku.flight.util.NetworkManager;
 import hk.hku.flight.util.SharePreferenceUtil;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
@@ -95,7 +96,18 @@ public class LiveStreamSelectDialog extends AlertDialog {
                     int code = liveStreamManager.startStream();
                     Log.i(TAG, "LiveStreamManager live stream start:" + code);
                     if (code == LiveStreamManager.STATUS_STREAMING) {
-                        ToastUtil.toast("live start!");
+                        NetworkManager.getInstance().startLive(mSelectUrl, new NetworkManager.BaseCallback<NetworkManager.BaseResponse>() {
+                            @Override
+                            public void onSuccess(NetworkManager.BaseResponse data) {
+                                ToastUtil.toast("live start!");
+                            }
+
+                            @Override
+                            public void onFail(String msg) {
+                                liveStreamManager.stopStream();
+                                ToastUtil.toast(String.format("live start fail(%s)", msg));
+                            }
+                        });
                     } else {
                         ToastUtil.toast(String.format("live start fail(%d)", code));
                     }
