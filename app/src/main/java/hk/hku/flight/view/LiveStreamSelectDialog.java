@@ -1,5 +1,6 @@
 package hk.hku.flight.view;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -31,6 +32,7 @@ import dji.sdk.sdkmanager.LiveVideoBitRateMode;
 import dji.sdk.sdkmanager.LiveVideoResolution;
 import hk.hku.flight.FlightActivity;
 import hk.hku.flight.R;
+import hk.hku.flight.account.AccountManager;
 import hk.hku.flight.util.DensityUtil;
 import hk.hku.flight.util.NetworkManager;
 import hk.hku.flight.util.SharePreferenceUtil;
@@ -45,9 +47,11 @@ public class LiveStreamSelectDialog extends AlertDialog {
     private final List<String> mLiveStreamList = new ArrayList<>();
     private String mSelectUrl = null;
     private LiveStreamManager mLiveStreamManager;
+    private Activity mActivity;
 
-    public LiveStreamSelectDialog(Context context) {
+    public LiveStreamSelectDialog(Activity context) {
         super(context);
+        mActivity = context;
         setOnShowListener(dialog -> initView());
         initData();
     }
@@ -84,37 +88,7 @@ public class LiveStreamSelectDialog extends AlertDialog {
                 Toast.makeText(getContext(), "Please select a live stream first.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            LiveStreamManager liveStreamManager = DJISDKManager.getInstance().getLiveStreamManager();
-            if (liveStreamManager != null) {
-                liveStreamManager.setLiveUrl(mSelectUrl);
-                Log.i(TAG, "live stream change:" + mSelectUrl);
-                liveStreamManager.setLiveVideoBitRateMode(LiveVideoBitRateMode.AUTO);
-                liveStreamManager.setLiveVideoResolution(LiveVideoResolution.VIDEO_RESOLUTION_1280_720);
-                liveStreamManager.setAudioMuted(true);
-                liveStreamManager.setVideoSource(LiveStreamManager.LiveStreamVideoSource.Primary);
-                ThreadManager.getInstance().submit(() -> {
-                    int code = liveStreamManager.startStream();
-                    Log.i(TAG, "LiveStreamManager live stream start:" + code);
-                    if (code == LiveStreamManager.STATUS_STREAMING) {
-                        NetworkManager.getInstance().startLive(mSelectUrl, new NetworkManager.BaseCallback<NetworkManager.BaseResponse>() {
-                            @Override
-                            public void onSuccess(NetworkManager.BaseResponse data) {
-                                ToastUtil.toast("live start!");
-                            }
-
-                            @Override
-                            public void onFail(String msg) {
-                                liveStreamManager.stopStream();
-                                ToastUtil.toast(String.format("live start fail(%s)", msg));
-                            }
-                        });
-                    } else {
-                        ToastUtil.toast(String.format("live start fail(%d)", code));
-                    }
-                });
-                Toast.makeText(getContext(), "starting live stream...", Toast.LENGTH_SHORT).show();
-                dismiss();
-            }
+            AccountManager.getInstance().checkLogin(mActivity, this::startLive);
         });
         findViewById(R.id.live_stream_select_cancel).setOnClickListener(v -> dismiss());
         findViewById(R.id.live_stream_select_dialog_add).setOnClickListener(v -> {
@@ -130,6 +104,40 @@ public class LiveStreamSelectDialog extends AlertDialog {
             });
             dialog.show();
         });
+    }
+
+    private void startLive() {
+        LiveStreamManager liveStreamManager = DJISDKManager.getInstance().getLiveStreamManager();
+        if (liveStreamManager != null) {
+            liveStreamManager.setLiveUrl(mSelectUrl);
+            Log.i(TAG, "live stream change:" + mSelectUrl);
+            liveStreamManager.setLiveVideoBitRateMode(LiveVideoBitRateMode.AUTO);
+            liveStreamManager.setLiveVideoResolution(LiveVideoResolution.VIDEO_RESOLUTION_1280_720);
+            liveStreamManager.setAudioMuted(true);
+            liveStreamManager.setVideoSource(LiveStreamManager.LiveStreamVideoSource.Primary);
+            ThreadManager.getInstance().submit(() -> {
+                int code = liveStreamManager.startStream();
+                Log.i(TAG, "LiveStreamManager live stream start:" + code);
+                if (code == LiveStreamManager.STATUS_STREAMING) {
+                    NetworkManager.getInstance().startLive(mSelectUrl, new NetworkManager.BaseCallback<NetworkManager.BaseResponse>() {
+                        @Override
+                        public void onSuccess(NetworkManager.BaseResponse data) {
+                            ToastUtil.toast("live start!");
+                        }
+
+                        @Override
+                        public void onFail(String msg) {
+                            liveStreamManager.stopStream();
+                            ToastUtil.toast(String.format("live start fail(%s)", msg));
+                        }
+                    });
+                } else {
+                    ToastUtil.toast(String.format("live start fail(%d)", code));
+                }
+            });
+            Toast.makeText(getContext(), "starting live stream...", Toast.LENGTH_SHORT).show();
+            dismiss();
+        }
     }
 
     private class LiveStreamAdapter extends RecyclerView.Adapter<LiveStreamViewHolder> {
