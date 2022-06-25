@@ -1,6 +1,6 @@
 package hk.hku.flight;
 
-import androidx.appcompat.app.AlertDialog;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -15,11 +15,11 @@ import dji.sdk.products.Aircraft;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LiveStreamManager;
 import hk.hku.flight.account.AccountManager;
-import hk.hku.flight.util.NetworkManager;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
 import hk.hku.flight.util.VideoFeedView;
 import hk.hku.flight.view.LiveStreamSelectDialog;
+import hk.hku.flight.view.StopLiveDialog;
 
 public class FlightActivity extends AppCompatActivity {
     private static final String TAG = "FlightActivity";
@@ -75,23 +75,7 @@ public class FlightActivity extends AppCompatActivity {
         initLiveStream();
         findViewById(R.id.btn_live_menu).setOnClickListener(v -> {
             if (mLiveStreamManager != null && mLiveStreamManager.isStreaming()) {
-                new AlertDialog.Builder(FlightActivity.this)
-                        .setTitle("stop live?")
-                        .setPositiveButton("STOP!", (dialog, which) -> {
-                            NetworkManager.getInstance().stopLive(mLiveStreamManager.getLiveUrl(), new NetworkManager.BaseCallback<NetworkManager.BaseResponse>() {
-                                @Override
-                                public void onSuccess(NetworkManager.BaseResponse data) {
-                                    Log.i(TAG, "stopLive success");
-                                }
-
-                                @Override
-                                public void onFail(String msg) {
-                                    Log.i(TAG, "stopLive fail:" + msg);
-                                }
-                            });
-                            mLiveStreamManager.stopStream();
-                        })
-                        .setNegativeButton("DON'T STOP", (dialog, which) -> dialog.dismiss()).show();
+                new StopLiveDialog(FlightActivity.this).show();
             } else {
                 AccountManager.getInstance().checkLogin(FlightActivity.this, () -> {
                     mLiveStreamSelectDialog = new LiveStreamSelectDialog(FlightActivity.this);

@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,7 +26,7 @@ public class InputAlertDialog extends AlertDialog {
     private String mTitleText;
     private LinearLayout mEditTextContainer;
     private List<EditText> mEditTextList = new ArrayList<>();
-    protected InputAlertDialog(@NonNull Context context) {
+    public InputAlertDialog(@NonNull Context context) {
         super(context);
         setOnShowListener(dialog -> init());
     }
@@ -75,7 +76,9 @@ public class InputAlertDialog extends AlertDialog {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
             }
         });
+        editText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_ACTION_DONE);
         editText.setTextColor(Color.WHITE);
+        editText.setHintTextColor(getContext().getResources().getColor(R.color.appback));
         editText.setHeight(DensityUtil.dip2px(40));
         mEditTextList.add(editText);
     }

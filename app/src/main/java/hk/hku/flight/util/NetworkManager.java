@@ -127,6 +127,21 @@ public class NetworkManager {
         call.enqueue(callback);
     }
 
+    public void stopAndSaveLive(String streamUrl, String name, String description, BaseCallback<BaseResponse> callback) {
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("id", AccountManager.getInstance().getUid());
+        Map<String, Object> reqMap = new HashMap<>();
+        reqMap.put("user", userMap);
+        reqMap.put("streamUrl", streamUrl);
+        reqMap.put("name", name);
+        reqMap.put("description", description);
+        Gson gson = new Gson();
+        String reqJson = gson.toJson(reqMap);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
+        Call<BaseResponse> call = mService.stopAndSaveLive(requestBody);
+        call.enqueue(callback);
+    }
+
     public interface NetworkService {
         @POST("register")
         Call<RegisterResponse> register(@Body RequestBody body);
@@ -143,6 +158,9 @@ public class NetworkManager {
 
         @POST("stopLive")
         Call<BaseResponse> stopLive(@Body RequestBody body);
+
+        @POST("stopAndSaveLive")
+        Call<BaseResponse> stopAndSaveLive(@Body RequestBody body);
     }
 
     public static class BaseResponse {
