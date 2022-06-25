@@ -26,16 +26,16 @@
             tools:text="select live stream" />
     </RelativeLayout>
 
-    <EditText
-        android:id="@+id/input_dialog_edittext"
+    <LinearLayout
+        android:id="@+id/input_dialog_container"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textColor="@android:color/white"
-        android:hint="rtmp://"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/input_dialog_bottom"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_dialog_top" />
+        app:layout_constraintTop_toBottomOf="@id/input_dialog_top">
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/input_dialog_bottom"

@@ -30,6 +30,7 @@ import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LiveStreamManager;
 import dji.sdk.sdkmanager.LiveVideoBitRateMode;
 import dji.sdk.sdkmanager.LiveVideoResolution;
+import hk.hku.flight.BuildConfig;
 import hk.hku.flight.FlightActivity;
 import hk.hku.flight.R;
 import hk.hku.flight.account.AccountManager;
@@ -38,6 +39,7 @@ import hk.hku.flight.util.NetworkManager;
 import hk.hku.flight.util.SharePreferenceUtil;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
+import hk.hku.flight.util.Utils;
 
 public class LiveStreamSelectDialog extends AlertDialog {
     private static final String TAG = "LiveStreamSelectDialog";
@@ -58,7 +60,7 @@ public class LiveStreamSelectDialog extends AlertDialog {
 
     private void initData() {
         mLiveStreamList.addAll(SharePreferenceUtil.getList(KEY_STREAM_URLS));
-        String df = "rtmp://18.166.154.193/live/" + AccountManager.getInstance().getUid().hashCode();
+        String df = BuildConfig.RTMP_BASE + Utils.generateMD5(AccountManager.getInstance().getUid());
         if (!mLiveStreamList.contains(df)) {
             mLiveStreamList.add(df);
         }
@@ -93,11 +95,12 @@ public class LiveStreamSelectDialog extends AlertDialog {
         findViewById(R.id.live_stream_select_cancel).setOnClickListener(v -> dismiss());
         findViewById(R.id.live_stream_select_dialog_add).setOnClickListener(v -> {
             InputAlertDialog dialog = new InputAlertDialog(getContext());
-            dialog.setDefaultText("rtmp://");
+            dialog.addEditText("rtmp://", "");
             dialog.setTitle("input your rtmp url");
             dialog.setOnInputCallback(result -> {
-                if (!mLiveStreamList.contains(result)) {
-                    mLiveStreamList.add(result);
+                String ret = result.get(0);
+                if (!mLiveStreamList.contains(ret)) {
+                    mLiveStreamList.add(ret);
                     SharePreferenceUtil.setList(KEY_STREAM_URLS, mLiveStreamList);
                     mAdapter.notifyDataSetChanged();
                 }
