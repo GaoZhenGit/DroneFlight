@@ -71,7 +71,7 @@ public class StopLiveDialog extends AlertDialog {
         inputAlertDialog.addEditText("live shot in " + str,"");
         inputAlertDialog.setOnInputCallback(results -> {
             String name = results.get(0);
-            String description = results.get(0);
+            String description = results.get(1);
             LiveStreamManager liveStreamManager = DJISDKManager.getInstance().getLiveStreamManager();
             NetworkManager.getInstance().stopAndSaveLive(
                     liveStreamManager.getLiveUrl(),
