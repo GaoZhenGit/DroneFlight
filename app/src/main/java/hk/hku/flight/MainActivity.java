@@ -55,6 +55,7 @@ import hk.hku.flight.util.ClickUtil;
 import hk.hku.flight.util.ConnectionCheckUtil;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
+import hk.hku.flight.video.VideoActivity;
 import hk.hku.flight.view.NetImageView;
 
 public class MainActivity extends AppCompatActivity {
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
             }
             AccountManager.getInstance().checkLogin(MainActivity.this, () -> startActivity(new Intent(MainActivity.this, AccountActivity.class)));
         });
+        findViewById(R.id.test).setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VideoActivity.class)));
     }
 
     private void startSDKRegistration() {

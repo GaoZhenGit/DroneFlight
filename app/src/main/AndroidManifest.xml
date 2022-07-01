@@ -31,6 +31,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
+            android:name=".video.VideoActivity"
+            android:screenOrientation="landscape"
+            android:exported="false" />
+        <activity
             android:name=".account.AccountActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
