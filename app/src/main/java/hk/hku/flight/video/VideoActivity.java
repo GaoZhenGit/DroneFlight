@@ -1,5 +1,8 @@
 package hk.hku.flight.video;
 
+import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
+import static com.google.android.exoplayer2.Player.STATE_READY;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,8 +12,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -27,6 +32,7 @@ public class VideoActivity extends AppCompatActivity {
     private static final String TAG = "VideoActivity";
     public static final String KEY_URL = "KEY_URL";
     private SurfaceView mSurfaceView;
+    private View mLoadingView;
     private ExoPlayer mPlayer;
 
     @Override
@@ -63,6 +69,26 @@ public class VideoActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onRenderedFirstFrame() {
+                Log.i(TAG, "onRenderedFirstFrame");
+                mLoadingView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                Log.i(TAG, "onPlaybackStateChanged:" + playbackState);
+                switch (playbackState) {
+                    case STATE_BUFFERING:
+                        mLoadingView.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                    case STATE_READY:
+                        mLoadingView.setVisibility(View.GONE);
+                        break;
+                }
+            }
+
+            @Override
             public void onEvents(Player player, Player.Events events) {
                 StringBuffer sb = new StringBuffer();
                 for (int i = 0; i < events.size(); i++) {
@@ -94,10 +120,16 @@ public class VideoActivity extends AppCompatActivity {
             public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
                 Log.i(TAG, "surfaceDestroyed");
                 mPlayer.stop();
-                mPlayer.release();
             }
         });
+        mLoadingView = findViewById(R.id.loading_view);
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPlayer.stop();
+        mPlayer.release();
+        mPlayer = null;
+    }
 }
