@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import hk.hku.flight.BuildConfig;
@@ -142,6 +143,30 @@ public class NetworkManager {
         call.enqueue(callback);
     }
 
+    public static class VideoListItem {
+        public User user;
+        public String name;
+        public String description;
+        public String url;
+
+    }
+    public static class VideoListResponse extends BaseResponse {
+        public User user;
+        public List<VideoListItem> videoList;
+    }
+
+    public void getRecordList(String uid, BaseCallback<VideoListResponse> callback) {
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("id", uid);
+        Map<String, Object> reqMap = new HashMap<>();
+        reqMap.put("user", userMap);
+        Gson gson = new Gson();
+        String reqJson = gson.toJson(reqMap);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
+        Call<VideoListResponse> call = mService.getRecordList(requestBody);
+        call.enqueue(callback);
+    }
+
     public interface NetworkService {
         @POST("register")
         Call<RegisterResponse> register(@Body RequestBody body);
@@ -161,6 +186,9 @@ public class NetworkManager {
 
         @POST("stopAndSaveLive")
         Call<BaseResponse> stopAndSaveLive(@Body RequestBody body);
+
+        @POST("getVideo")
+        Call<VideoListResponse> getRecordList(@Body RequestBody body);
     }
 
     public static class BaseResponse {
