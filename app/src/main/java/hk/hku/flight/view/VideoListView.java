@@ -83,7 +83,7 @@ public class VideoListView extends RecyclerView {
         }
 
         public void onBind(VideoItemData data) {
-            mVideoCover.load(data.videoCoverUrl);
+            mVideoCover.loadHttpVideoPreview(data.url);
             mVideoName.setText(data.videoName);
             mVideoDesc.setText(data.videoDescription);
             mUserName.setText(data.userName);
@@ -98,7 +98,6 @@ public class VideoListView extends RecyclerView {
 
     public static class VideoItemData {
         public String url;
-        public String videoCoverUrl;
         public String videoName;
         public String videoDescription;
         public String uid;

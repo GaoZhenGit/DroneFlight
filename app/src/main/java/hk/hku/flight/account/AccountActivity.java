@@ -49,17 +49,6 @@ public class AccountActivity extends AppCompatActivity {
         });
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
         mRecordVideoListView = findViewById(R.id.live_record_listview);
-        //todo mock
-//        List<VideoListView.VideoItemData> dataList = new ArrayList<>();
-//        for (int i = 0; i < 10; i++) {
-//            VideoListView.VideoItemData data = new VideoListView.VideoItemData();
-//            data.userName = "user " + i;
-//            data.userAvatarUrl = "https://img1.baidu.com/it/u=592570905,1313515675&fm=253&fmt=auto&app=138&f=JPEG";
-//            data.videoCoverUrl = "https://img1.baidu.com/it/u=3232158323,1662454724&fm=253&fmt=auto&app=138&f=JPEG?w=650&h=434";
-//            data.videoName = "video " + i;
-//            data.videoDescription = "description" + i;
-//            dataList.add(data);
-//        }
         NetworkManager.getInstance().getRecordList(AccountManager.getInstance().getUid(), new NetworkManager.BaseCallback<NetworkManager.VideoListResponse>() {
             @Override
             public void onSuccess(NetworkManager.VideoListResponse data) {
