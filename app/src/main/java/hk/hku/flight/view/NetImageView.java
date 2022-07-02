@@ -76,6 +76,11 @@ public class NetImageView extends androidx.appcompat.widget.AppCompatImageView {
         }
     }
 
+    public void loadDrawable(Drawable drawable) {
+        Glide.with(getContext()).load(drawable).into(this);
+        mDefaultDrawable = drawable;
+    }
+
     public void load(String url) {
         Context context = getContext();
         Glide.with(context)

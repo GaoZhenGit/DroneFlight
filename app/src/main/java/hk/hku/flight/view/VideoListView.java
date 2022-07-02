@@ -2,6 +2,7 @@ package hk.hku.flight.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,7 +84,11 @@ public class VideoListView extends RecyclerView {
         }
 
         public void onBind(VideoItemData data) {
-            mVideoCover.loadHttpVideoPreview(data.url);
+            if (!TextUtils.isEmpty(data.url) && data.url.startsWith("rtmp")) {
+                mVideoCover.loadDrawable(getContext().getResources().getDrawable(R.drawable.default_live));
+            } else {
+                mVideoCover.loadHttpVideoPreview(data.url);
+            }
             mVideoName.setText(data.videoName);
             mVideoDesc.setText(data.videoDescription);
             mUserName.setText(data.userName);

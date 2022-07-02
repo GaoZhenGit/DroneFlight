@@ -8,8 +8,8 @@
 
     <hk.hku.flight.view.NetImageView
         android:id="@+id/video_list_item_img"
-        android:layout_width="140dp"
-        android:layout_height="90dp"
+        android:layout_width="128dp"
+        android:layout_height="72dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:scaleType="centerCrop"
@@ -19,6 +19,7 @@
         android:id="@+id/video_list_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/video_list_item_img"
         android:textColor="@color/black"
@@ -28,16 +29,17 @@
     <TextView
         android:id="@+id/video_list_item_desc"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_above="@id/video_list_item_user"
         android:layout_below="@id/video_list_item_name"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="5dp"
         android:layout_toRightOf="@id/video_list_item_img"
         android:textColor="@android:color/darker_gray"
         android:textSize="14dp"
         tools:text="The road " />
 
     <LinearLayout
+        android:id="@+id/video_list_item_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/video_list_item_img"
@@ -49,8 +51,8 @@
             android:id="@+id/video_list_item_user_avatar"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            app:defaultImageRes="@drawable/default_avatar"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            app:defaultImageRes="@drawable/default_avatar" />
 
         <TextView
             android:id="@+id/video_list_item_user_name"

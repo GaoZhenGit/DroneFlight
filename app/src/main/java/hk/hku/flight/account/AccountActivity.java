@@ -136,8 +136,8 @@ public class AccountActivity extends AppCompatActivity {
                 List<VideoListView.VideoItemData> dataList = new ArrayList<>();
                 for (NetworkManager.VideoListItem item : data.urlRspList) {
                     VideoListView.VideoItemData d = new VideoListView.VideoItemData();
-                    d.videoName = item.name;
-                    d.videoDescription = item.description;
+                    d.videoName = item.resultUrl;
+//                    d.videoDescription = item.resultUrl;
                     d.url = item.resultUrl;
                     d.uid = item.user.id;
                     d.userName = item.user.name;
