@@ -148,11 +148,12 @@ public class NetworkManager {
         public String name;
         public String description;
         public String url;
-
+        public String resultUrl;
     }
     public static class VideoListResponse extends BaseResponse {
         public User user;
         public List<VideoListItem> videoList;
+        public List<VideoListItem> urlRspList;
     }
 
     public void getRecordList(String uid, BaseCallback<VideoListResponse> callback) {
@@ -164,6 +165,18 @@ public class NetworkManager {
         String reqJson = gson.toJson(reqMap);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
         Call<VideoListResponse> call = mService.getRecordList(requestBody);
+        call.enqueue(callback);
+    }
+
+    public void getLiveList(String uid, BaseCallback<VideoListResponse> callback) {
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("id", uid);
+        Map<String, Object> reqMap = new HashMap<>();
+        reqMap.put("user", userMap);
+        Gson gson = new Gson();
+        String reqJson = gson.toJson(reqMap);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
+        Call<VideoListResponse> call = mService.getLiveList(requestBody);
         call.enqueue(callback);
     }
 
@@ -189,6 +202,9 @@ public class NetworkManager {
 
         @POST("getVideo")
         Call<VideoListResponse> getRecordList(@Body RequestBody body);
+
+        @POST("getLive")
+        Call<VideoListResponse> getLiveList(@Body RequestBody body);
     }
 
     public static class BaseResponse {

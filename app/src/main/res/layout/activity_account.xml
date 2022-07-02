@@ -60,13 +60,11 @@
         app:layout_constraintRight_toLeftOf="@id/account_right_container"
         app:layout_constraintTop_toBottomOf="@id/account_title">
 
-        <TextView
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/account_list_tab"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:gravity="center"
-            android:text="Live Record"
-            android:textColor="@color/black"
-            android:textSize="16dp" />
+            android:orientation="horizontal" />
 
         <View
             android:layout_width="match_parent"
@@ -75,8 +73,8 @@
             android:layout_marginRight="15dp"
             android:background="@color/appback" />
 
-        <hk.hku.flight.view.VideoListView
-            android:id="@+id/live_record_listview"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/account_list_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
