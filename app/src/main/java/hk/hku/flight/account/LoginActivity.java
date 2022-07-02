@@ -216,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(NetworkManager.ImageRsp data) {
                 Log.i(TAG, "upload image success");
-                onRegisterInner(name, email, password, NetworkManager.baseUrl + data.urlSuffix);
+                onRegisterInner(name, email, password, NetworkManager.baseUrl + File.separator + data.urlSuffix);
             }
 
             @Override

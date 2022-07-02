@@ -72,7 +72,7 @@ public class AccountActivity extends AppCompatActivity {
                     d.url = BuildConfig.HTTP_BASE + File.separator + item.url;
                     d.uid = item.user.id;
                     d.userName = item.user.name;
-                    d.userAvatarUrl = BuildConfig.HTTP_BASE + File.separator + item.user.avatar;
+                    d.userAvatarUrl = item.user.avatar;
                     dataList.add(d);
                 }
                 ThreadManager.getInstance().runOnUiThread(() -> mRecordVideoListView.setData(dataList));

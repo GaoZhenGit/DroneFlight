@@ -150,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
             }
             AccountManager.getInstance().checkLogin(MainActivity.this, () -> startActivity(new Intent(MainActivity.this, AccountActivity.class)));
         });
-        findViewById(R.id.test).setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VideoActivity.class)));
     }
 
     private void startSDKRegistration() {

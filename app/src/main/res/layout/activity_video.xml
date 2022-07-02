@@ -6,11 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/black"
     tools:context=".video.VideoActivity">
+
     <SurfaceView
         android:id="@+id/surface_view"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:layout_constraintDimensionRatio="h,9:16" />
+        app:layout_constraintDimensionRatio="h,9:16"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
