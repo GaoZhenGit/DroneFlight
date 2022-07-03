@@ -15,6 +15,7 @@ import dji.sdk.products.Aircraft;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.sdkmanager.LiveStreamManager;
 import hk.hku.flight.account.AccountManager;
+import hk.hku.flight.util.NetworkManager;
 import hk.hku.flight.util.ThreadManager;
 import hk.hku.flight.util.ToastUtil;
 import hk.hku.flight.util.VideoFeedView;
@@ -121,6 +122,17 @@ public class FlightActivity extends AppCompatActivity {
         ThreadManager.getInstance().submit(() -> {
             if (mLiveStreamManager.isStreaming()) {
                 mLiveStreamManager.stopStream();
+                NetworkManager.getInstance().stopLive(mLiveStreamManager.getLiveUrl(), new NetworkManager.BaseCallback<NetworkManager.BaseResponse>() {
+                    @Override
+                    public void onSuccess(NetworkManager.BaseResponse data) {
+                        Log.i(TAG, "onLiveStreamStop onSuccess");
+                    }
+
+                    @Override
+                    public void onFail(String msg) {
+                        Log.i(TAG, "onLiveStreamStop onFail");
+                    }
+                });
             }
         });
         ThreadManager.getInstance().runOnUiThread(() -> {
