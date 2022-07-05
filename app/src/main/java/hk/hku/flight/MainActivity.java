@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -44,6 +45,7 @@ import hk.hku.flight.modules.SignalStateMgr;
 import hk.hku.flight.util.ClickUtil;
 import hk.hku.flight.util.ConnectionCheckUtil;
 import hk.hku.flight.util.ToastUtil;
+import hk.hku.flight.video.VideoActivity;
 import hk.hku.flight.view.NetImageView;
 
 public class MainActivity extends AppCompatActivity {
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
             }
             AccountManager.getInstance().checkLogin(MainActivity.this, () -> startActivity(new Intent(MainActivity.this, AccountActivity.class)));
         });
+        findViewById(R.id.btn_gallery).setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VideoActivity.class)));
     }
 
     private void startSDKRegistration() {

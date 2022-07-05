@@ -23,7 +23,7 @@ import com.google.android.exoplayer2.ui.StyledPlayerView;
 import hk.hku.flight.R;
 
 public class VideoFullScreenActivity extends AppCompatActivity {
-    private static final String TAG = "VideoActivity";
+    private static final String TAG = "VideoFullScreenActivity";
     public static final String KEY_URL = "KEY_URL";
     private static final int MODE_HTTP = 1;
     private static final int MODE_RTMP = 2;
