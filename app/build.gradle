@@ -22,14 +22,14 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "HTTP_BASE", '"http://172.16.30.80:8090"')
-            buildConfigField("String", "RTMP_BASE", '"rtmp://18.166.154.193/live/"')
+            buildConfigField("String", "HTTP_BASE", '"http://36.134.145.85:8090"')
+            buildConfigField("String", "RTMP_BASE", '"rtmp://36.134.145.85/live/"')
             multiDexKeepProguard file('multidex-config.pro')
         }
         release {
             minifyEnabled false
-            buildConfigField("String", "HTTP_BASE", '"http://18.166.154.193:8090"')
-            buildConfigField("String", "RTMP_BASE", '"rtmp://18.166.154.193/live/"')
+            buildConfigField("String", "HTTP_BASE", '"http://36.134.145.85:8090"')
+            buildConfigField("String", "RTMP_BASE", '"rtmp://36.134.145.85/live/"')
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             multiDexKeepProguard file('multidex-config.pro')
         }

@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hk.hku.flight.R;
-import hk.hku.flight.video.VideoActivity;
+import hk.hku.flight.video.VideoFullScreenActivity;
 
 public class VideoListView extends RecyclerView {
     private List<VideoItemData> mDataList = new ArrayList<>();
@@ -94,8 +93,8 @@ public class VideoListView extends RecyclerView {
             mUserName.setText(data.userName);
             mUserAvatar.loadRound(data.userAvatarUrl);
             itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(getContext(), VideoActivity.class);
-                intent.putExtra(VideoActivity.KEY_URL, data.url);
+                Intent intent = new Intent(getContext(), VideoFullScreenActivity.class);
+                intent.putExtra(VideoFullScreenActivity.KEY_URL, data.url);
                 getContext().startActivity(intent);
             });
         }

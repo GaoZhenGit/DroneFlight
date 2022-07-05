@@ -31,7 +31,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".video.VideoActivity"
+            android:name=".video.VideoFullScreenActivity"
             android:screenOrientation="landscape"
             android:exported="false" />
         <activity

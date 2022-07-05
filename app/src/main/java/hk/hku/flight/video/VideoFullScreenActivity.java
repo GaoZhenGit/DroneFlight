@@ -1,46 +1,42 @@
 package hk.hku.flight.video;
 
-import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
-import static com.google.android.exoplayer2.Player.STATE_READY;
+import static com.google.android.exoplayer2.ui.StyledPlayerView.SHOW_BUFFERING_ALWAYS;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
+import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSource;
-import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 
 import hk.hku.flight.R;
 
-public class VideoActivity extends AppCompatActivity {
+public class VideoFullScreenActivity extends AppCompatActivity {
     private static final String TAG = "VideoActivity";
     public static final String KEY_URL = "KEY_URL";
-    private SurfaceView mSurfaceView;
-    private View mLoadingView;
+    private static final int MODE_HTTP = 1;
+    private static final int MODE_RTMP = 2;
+    private StyledPlayerView mStyledPlayerView;
     private ExoPlayer mPlayer;
+    private int mVideoMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);//这行代码一定要在setContentView之前，不然会闪退
-        setContentView(R.layout.activity_video);
+        setContentView(R.layout.activity_video_full_screen);
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         prepareData();
@@ -49,18 +45,23 @@ public class VideoActivity extends AppCompatActivity {
 
     private void prepareData() {
         String videoUrl = getIntent().getStringExtra(KEY_URL);
+//        videoUrl = "rtmp://36.134.145.85/live/abc";
         if (TextUtils.isEmpty(videoUrl)) {
             finish();
             return;
         }
-        mPlayer = new ExoPlayer.Builder(VideoActivity.this).build();
+        mPlayer = new ExoPlayer.Builder(VideoFullScreenActivity.this)
+                .setLoadControl(new DefaultLoadControl())
+                .build();
         if (videoUrl.startsWith("http")) {
             mPlayer.addMediaItem(MediaItem.fromUri(videoUrl));
+            mVideoMode = MODE_HTTP;
         } else if (videoUrl.startsWith("rtmp")) {
             RtmpDataSource.Factory dataSourceFactory = new RtmpDataSource.Factory();
             MediaItem mediaItem = MediaItem.fromUri(videoUrl);
             MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem);
             mPlayer.addMediaSource(videoSource);
+            mVideoMode = MODE_RTMP;
         }
         mPlayer.addListener(new Player.Listener() {
             @Override
@@ -71,21 +72,11 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onRenderedFirstFrame() {
                 Log.i(TAG, "onRenderedFirstFrame");
-                mLoadingView.setVisibility(View.GONE);
             }
 
             @Override
             public void onPlaybackStateChanged(int playbackState) {
                 Log.i(TAG, "onPlaybackStateChanged:" + playbackState);
-                switch (playbackState) {
-                    case STATE_BUFFERING:
-                        mLoadingView.setVisibility(View.VISIBLE);
-                        break;
-                    default:
-                    case STATE_READY:
-                        mLoadingView.setVisibility(View.GONE);
-                        break;
-                }
             }
 
             @Override
@@ -97,32 +88,16 @@ public class VideoActivity extends AppCompatActivity {
                 Log.i(TAG, "onEvents:" + sb.toString());
             }
         });
+        mPlayer.setPlayWhenReady(true);
+        mPlayer.prepare();
     }
 
     private void initView() {
-        mSurfaceView = findViewById(R.id.surface_view);
-        mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                Log.i(TAG, "surfaceCreated");
-                mPlayer.setVideoSurface(holder.getSurface());
-                mPlayer.prepare();
-                mPlayer.play();
-            }
-
-            @Override
-            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-                Log.i(TAG, "surfaceChanged");
-                mPlayer.setVideoSurface(holder.getSurface());
-            }
-
-            @Override
-            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-                Log.i(TAG, "surfaceDestroyed");
-                mPlayer.stop();
-            }
-        });
-        mLoadingView = findViewById(R.id.loading_view);
+        mStyledPlayerView = findViewById(R.id.surface_view);
+        mStyledPlayerView.setPlayer(mPlayer);
+        mStyledPlayerView.setShowNextButton(false);
+        mStyledPlayerView.setShowPreviousButton(false);
+        mStyledPlayerView.setShowBuffering(SHOW_BUFFERING_ALWAYS);
     }
 
     @Override
