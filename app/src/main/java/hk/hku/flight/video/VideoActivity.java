@@ -1,5 +1,7 @@
 package hk.hku.flight.video;
 
+import static com.google.android.exoplayer2.ui.StyledPlayerView.SHOW_BUFFERING_WHEN_PLAYING;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
@@ -58,6 +60,7 @@ public class VideoActivity extends AppCompatActivity {
         mStyledPlayerView = findViewById(R.id.surface_view);
         mStyledPlayerView.setShowNextButton(false);
         mStyledPlayerView.setShowPreviousButton(false);
+        mStyledPlayerView.setShowBuffering(SHOW_BUFFERING_WHEN_PLAYING);
         mStyledPlayerView.setFullscreenButtonClickListener(isFullScreen -> {
             int vis = isFullScreen ? View.GONE : View.VISIBLE;
             mResultContainer.setVisibility(vis);
@@ -80,11 +83,13 @@ public class VideoActivity extends AppCompatActivity {
                 ((TextView)v).setText("Live Mode");
                 stopPlay();
                 getLiveList();
+                mResultContainer.setVisibility(View.GONE);
             } else {
                 mMode = MODE_RECORD;
                 ((TextView)v).setText("Record Mode");
                 stopPlay();
                 getRecordList();
+                mResultContainer.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -127,12 +132,30 @@ public class VideoActivity extends AppCompatActivity {
         NetworkManager.getInstance().getLiveList("0", new NetworkManager.BaseCallback<NetworkManager.VideoListResponse>() {
             @Override
             public void onSuccess(NetworkManager.VideoListResponse data) {
-
+                Log.i(TAG, "getLiveList onSuccess");
+                List<VideoListView.VideoItemData> dataList = new ArrayList<>();
+                for (NetworkManager.VideoListItem item : data.urlRspList) {
+                    VideoListView.VideoItemData d = new VideoListView.VideoItemData();
+                    d.videoName = item.resultUrl;
+//                    d.videoDescription = item.resultUrl;
+                    d.url = item.resultUrl;
+                    d.uid = item.user.id;
+                    d.userName = item.user.name;
+                    d.userAvatarUrl = item.user.avatar;
+                    dataList.add(d);
+                }
+                ThreadManager.getInstance().runOnUiThread(() -> {
+                    mVideoListView.setData(dataList);
+                    if (dataList.size() > 0) {
+                        playVideo(dataList.get(0).url);
+                        mTitleText.setText(dataList.get(0).videoName);
+                    }
+                });
             }
 
             @Override
             public void onFail(String msg) {
-
+                Log.i(TAG, "getLiveList onFail:" + msg);
             }
         });
     }
@@ -168,6 +191,11 @@ public class VideoActivity extends AppCompatActivity {
             @Override
             public void onRenderedFirstFrame() {
                 mStyledPlayerView.hideController();
+            }
+
+            @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                Log.i(TAG, "onPlaybackStateChanged:" + playbackState);
             }
         });
         mPlayer.prepare();
