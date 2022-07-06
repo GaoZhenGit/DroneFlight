@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/appback"
     tools:context=".video.VideoActivity">
 
     <RelativeLayout
@@ -40,6 +41,19 @@
             android:textSize="18dp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/btn_video_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:padding="5dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/default_confirm_btn"
+            android:text="Record Mode"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
+
     </RelativeLayout>
 
     <com.google.android.exoplayer2.ui.StyledPlayerView
@@ -47,25 +61,58 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="h,10:16"
+        app:layout_constraintDimensionRatio="h,16:9"
+        app:layout_constraintHorizontal_weight="0.6"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/video_list_view"
         app:layout_constraintTop_toBottomOf="@id/video_title" />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/video_result_container"
         android:layout_width="0dp"
         android:layout_height="100dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toRightOf="@id/surface_view"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/video_title">
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/result_first"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="WITH-MASK"
+            android:textColor="#00ff00"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/result_second"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="WITHOUT-MASK"
+            android:textColor="#ff0000"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/result_third"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="UNSURE"
+            android:textColor="#00ffff"
+            android:textSize="16dp" />
+
+    </LinearLayout>
 
     <hk.hku.flight.view.VideoListView
         android:id="@+id/video_list_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_weight="0.4"
         app:layout_constraintLeft_toRightOf="@id/surface_view"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/video_result_container" />

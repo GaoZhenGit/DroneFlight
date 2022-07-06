@@ -23,6 +23,7 @@ import hk.hku.flight.video.VideoFullScreenActivity;
 public class VideoListView extends RecyclerView {
     private List<VideoItemData> mDataList = new ArrayList<>();
     private VideoListAdapter mAdapter;
+    private OnItemClickListener onItemClickListener;
 
     public VideoListView(@NonNull Context context) {
         super(context);
@@ -44,6 +45,10 @@ public class VideoListView extends RecyclerView {
         setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mAdapter = new VideoListAdapter();
         setAdapter(mAdapter);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        onItemClickListener = listener;
     }
 
     private class VideoListAdapter extends RecyclerView.Adapter<VideoListViewHolder> {
@@ -93,11 +98,19 @@ public class VideoListView extends RecyclerView {
             mUserName.setText(data.userName);
             mUserAvatar.loadRound(data.userAvatarUrl);
             itemView.setOnClickListener(v -> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onClick(data);
+                    return;
+                }
                 Intent intent = new Intent(getContext(), VideoFullScreenActivity.class);
                 intent.putExtra(VideoFullScreenActivity.KEY_URL, data.url);
                 getContext().startActivity(intent);
             });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onClick(VideoItemData data);
     }
 
     public static class VideoItemData {
