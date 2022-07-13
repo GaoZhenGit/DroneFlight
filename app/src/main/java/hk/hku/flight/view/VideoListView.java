@@ -114,6 +114,7 @@ public class VideoListView extends RecyclerView {
     }
 
     public static class VideoItemData {
+        public String videoId;
         public String url;
         public String videoName;
         public String videoDescription;

@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.ext.rtmp.RtmpDataSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -43,6 +46,7 @@ public class VideoActivity extends AppCompatActivity {
     private TextView mTitleText;
     private ExoPlayer mPlayer;
     private int mMode = MODE_RECORD;
+    private List<NetworkManager.ResultNum> mResultList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,7 @@ public class VideoActivity extends AppCompatActivity {
         mVideoListView = findViewById(R.id.video_list_view);
         mVideoListView.setOnItemClickListener(data -> {
             playVideo(data.url);
+            getVideoResult(data.videoId);
             mTitleText.setText(data.videoName);
         });
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
@@ -103,6 +108,7 @@ public class VideoActivity extends AppCompatActivity {
                 List<VideoListView.VideoItemData> dataList = new ArrayList<>();
                 for (NetworkManager.VideoListItem item : data.videoList) {
                     VideoListView.VideoItemData d = new VideoListView.VideoItemData();
+                    d.videoId = item.id;
                     d.videoName = item.name;
                     d.videoDescription = item.description;
                     d.url = BuildConfig.HTTP_BASE + File.separator + item.url;
@@ -115,6 +121,7 @@ public class VideoActivity extends AppCompatActivity {
                     mVideoListView.setData(dataList);
                     if (dataList.size() > 0) {
                         playVideo(dataList.get(0).url);
+                        getVideoResult(dataList.get(0).videoId);
                         mTitleText.setText(dataList.get(0).videoName);
                     }
                 });
@@ -199,5 +206,44 @@ public class VideoActivity extends AppCompatActivity {
             }
         });
         mPlayer.prepare();
+    }
+
+    private void getVideoResult(String videoId) {
+        Log.i(TAG, "getVideoResult");
+        NetworkManager.getInstance().getResultNum(videoId, new NetworkManager.BaseCallback<NetworkManager.DetectionResultResponse>() {
+            @Override
+            public void onSuccess(NetworkManager.DetectionResultResponse data) {
+                Log.i(TAG, "getVideoResult success");
+                mResultList = data.resultNumList;
+                mHandler.post(mProcessRunnable);
+            }
+
+            @Override
+            public void onFail(String msg) {
+                Log.i(TAG, "getVideoResult fail:" + msg);
+            }
+        });
+    }
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private Runnable mProcessRunnable = new Runnable() {
+        @Override
+        public void run() {
+            startGetPosition();
+            mHandler.postDelayed(this, 200);
+        }
+    };
+    private void startGetPosition() {
+        if (mPlayer != null && mResultList != null) {
+            mPlayer.getDuration();
+            int index = (int) (mPlayer.getCurrentPosition() / 1000);
+            if (index > 0 && index < mResultList.size()) {
+                NetworkManager.ResultNum num = mResultList.get(index);
+                Log.i(TAG, "update current stat:" + index + "/" + mResultList.size());
+                ((TextView)findViewById(R.id.tv_with_mask)).setText(String.valueOf(num.withMask));
+                ((TextView)findViewById(R.id.tv_without_mask)).setText(String.valueOf(num.withoutMask));
+                ((TextView)findViewById(R.id.tv_unknown_mask)).setText(String.valueOf(num.unKnown));
+            }
+        }
     }
 }

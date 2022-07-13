@@ -146,6 +146,7 @@ public class NetworkManager {
     }
 
     public static class VideoListItem {
+        public String id;
         public User user;
         public String name;
         public String description;
@@ -187,6 +188,25 @@ public class NetworkManager {
         call.enqueue(callback);
     }
 
+    public static class ResultNum {
+        public int withMask;
+        public int withoutMask;
+        public int unKnown;
+    }
+    public static class DetectionResultResponse extends BaseResponse{
+        public List<ResultNum> resultNumList;
+    }
+
+    public void getResultNum(String videoId, BaseCallback<DetectionResultResponse> callback) {
+        Map<String, Object> reqMap = new HashMap<>();
+        reqMap.put("videoId", videoId);
+        Gson gson = new Gson();
+        String reqJson = gson.toJson(reqMap);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
+        Call<DetectionResultResponse> call = mService.getResultNum(requestBody);
+        call.enqueue(callback);
+    }
+
     public interface NetworkService {
         @POST("register")
         Call<RegisterResponse> register(@Body RequestBody body);
@@ -215,6 +235,9 @@ public class NetworkManager {
 
         @POST("getLiveByUid")
         Call<VideoListResponse> getLiveByUid(@Body RequestBody body);
+
+        @POST("getResultNum")
+        Call<DetectionResultResponse> getResultNum(@Body RequestBody body);
     }
 
     public static class BaseResponse {
