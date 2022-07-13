@@ -129,7 +129,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private void getLiveList() {
         mVideoListView.setData(new ArrayList<>());
-        NetworkManager.getInstance().getLiveList("0", new NetworkManager.BaseCallback<NetworkManager.VideoListResponse>() {
+        NetworkManager.getInstance().getLiveList("", new NetworkManager.BaseCallback<NetworkManager.VideoListResponse>() {
             @Override
             public void onSuccess(NetworkManager.VideoListResponse data) {
                 Log.i(TAG, "getLiveList onSuccess");

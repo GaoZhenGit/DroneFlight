@@ -1,5 +1,7 @@
 package hk.hku.flight.util;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -176,7 +178,12 @@ public class NetworkManager {
         Gson gson = new Gson();
         String reqJson = gson.toJson(reqMap);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), reqJson);
-        Call<VideoListResponse> call = mService.getLiveList(requestBody);
+        Call<VideoListResponse> call;
+        if (TextUtils.isEmpty(uid)) {
+            call = mService.getLiveList(requestBody);
+        } else {
+            call = mService.getLiveByUid(requestBody);
+        }
         call.enqueue(callback);
     }
 
@@ -203,8 +210,11 @@ public class NetworkManager {
         @POST("getVideo")
         Call<VideoListResponse> getRecordList(@Body RequestBody body);
 
-        @POST("getLive")
+        @POST("getLiveList")
         Call<VideoListResponse> getLiveList(@Body RequestBody body);
+
+        @POST("getLiveByUid")
+        Call<VideoListResponse> getLiveByUid(@Body RequestBody body);
     }
 
     public static class BaseResponse {
