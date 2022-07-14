@@ -11,9 +11,9 @@ android {
         applicationId "hk.hku.flight"
         multiDexEnabled true
         minSdk 24
-        targetSdk 30
-        versionCode 4
-        versionName "0.0.4"
+        targetSdk 27
+        versionCode 10000
+        versionName "1.0.0"
         useLibrary 'org.apache.http.legacy'
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a'
