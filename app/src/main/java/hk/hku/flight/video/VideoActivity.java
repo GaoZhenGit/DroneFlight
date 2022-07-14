@@ -246,4 +246,10 @@ public class VideoActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(mProcessRunnable);
+    }
 }
