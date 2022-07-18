@@ -66,11 +66,7 @@ public class VideoActivity extends AppCompatActivity {
         mStyledPlayerView.setShowPreviousButton(false);
         mStyledPlayerView.setShowBuffering(SHOW_BUFFERING_WHEN_PLAYING);
         mStyledPlayerView.setFullscreenButtonClickListener(isFullScreen -> {
-            int vis = isFullScreen ? View.GONE : View.VISIBLE;
-            mResultContainer.setVisibility(vis);
-            mVideoListView.setVisibility(vis);
-            mTitle.setVisibility(vis);
-            ((ViewGroup) mStyledPlayerView.getParent()).setBackgroundColor(isFullScreen ? Color.BLACK : getResources().getColor(R.color.appback));
+            setFullScreen(isFullScreen);
         });
         mVideoListView = findViewById(R.id.video_list_view);
         mVideoListView.setOnItemClickListener(data -> {
@@ -85,18 +81,28 @@ public class VideoActivity extends AppCompatActivity {
         findViewById(R.id.btn_video_switch).setOnClickListener(v -> {
             if (mMode == MODE_RECORD) {
                 mMode = MODE_LIVE;
-                ((TextView)v).setText("Live Mode");
+                ((TextView) v).setText("Live Mode");
+                mTitleText.setText("Live Mode");
                 stopPlay();
                 getLiveList();
                 mResultContainer.setVisibility(View.GONE);
             } else {
                 mMode = MODE_RECORD;
-                ((TextView)v).setText("Record Mode");
+                ((TextView) v).setText("Record Mode");
+                mTitleText.setText("Record Mode");
                 stopPlay();
                 getRecordList();
                 mResultContainer.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private void setFullScreen(boolean isFullScreen) {
+        int vis = isFullScreen ? View.GONE : View.VISIBLE;
+        mResultContainer.setVisibility(vis);
+        mVideoListView.setVisibility(vis);
+        mTitle.setVisibility(vis);
+        ((ViewGroup) mStyledPlayerView.getParent()).setBackgroundColor(isFullScreen ? Color.BLACK : getResources().getColor(R.color.appback));
     }
 
     private void getRecordList() {
@@ -233,6 +239,7 @@ public class VideoActivity extends AppCompatActivity {
             mHandler.postDelayed(this, 200);
         }
     };
+
     private void startGetPosition() {
         if (mPlayer != null && mResultList != null) {
             mPlayer.getDuration();
@@ -240,9 +247,9 @@ public class VideoActivity extends AppCompatActivity {
             if (index > 0 && index < mResultList.size()) {
                 NetworkManager.ResultNum num = mResultList.get(index);
                 Log.i(TAG, "update current stat:" + index + "/" + mResultList.size());
-                ((TextView)findViewById(R.id.tv_with_mask)).setText(String.valueOf(num.withMask));
-                ((TextView)findViewById(R.id.tv_without_mask)).setText(String.valueOf(num.withoutMask));
-                ((TextView)findViewById(R.id.tv_unknown_mask)).setText(String.valueOf(num.unKnown));
+                ((TextView) findViewById(R.id.tv_with_mask)).setText(String.valueOf(num.withMask));
+                ((TextView) findViewById(R.id.tv_without_mask)).setText(String.valueOf(num.withoutMask));
+                ((TextView) findViewById(R.id.tv_unknown_mask)).setText(String.valueOf(num.unKnown));
             }
         }
     }

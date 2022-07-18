@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,9 @@ import java.util.List;
 import hk.hku.flight.R;
 import hk.hku.flight.video.VideoFullScreenActivity;
 
-public class VideoListView extends RecyclerView {
+public class VideoListView extends FrameLayout {
+    private RecyclerView mMainView;
+    private View mEmptyView;
     private List<VideoItemData> mDataList = new ArrayList<>();
     private VideoListAdapter mAdapter;
     private OnItemClickListener onItemClickListener;
@@ -38,13 +41,25 @@ public class VideoListView extends RecyclerView {
     public void setData(List<VideoItemData> dataList) {
         mDataList.clear();
         mDataList.addAll(dataList);
+        if (mDataList.isEmpty()) {
+            mEmptyView.setVisibility(View.VISIBLE);
+            mMainView.setVisibility(View.GONE);
+        } else {
+            mEmptyView.setVisibility(View.GONE);
+            mMainView.setVisibility(View.VISIBLE);
+        }
         mAdapter.notifyDataSetChanged();
     }
 
     private void initView() {
-        setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        LayoutInflater.from(getContext()).inflate(R.layout.video_list_view, this, true);
+        mMainView = findViewById(R.id.video_list_view_main);
+        mEmptyView = findViewById(R.id.video_list_view_empty_view);
+        mMainView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mAdapter = new VideoListAdapter();
-        setAdapter(mAdapter);
+        mMainView.setAdapter(mAdapter);
+        mEmptyView.setVisibility(View.VISIBLE);
+        mMainView.setVisibility(View.GONE);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
