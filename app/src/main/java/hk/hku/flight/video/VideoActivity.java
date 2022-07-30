@@ -126,8 +126,8 @@ public class VideoActivity extends AppCompatActivity {
                 ThreadManager.getInstance().runOnUiThread(() -> {
                     mVideoListView.setData(dataList);
                     if (dataList.size() > 0) {
-                        playVideo(dataList.get(0).url);
-                        getVideoResult(dataList.get(0).videoId);
+//                        playVideo(dataList.get(0).url);
+//                        getVideoResult(dataList.get(0).videoId);
                         mTitleText.setText(dataList.get(0).videoName);
                     }
                 });
@@ -142,6 +142,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private void getLiveList() {
         mVideoListView.setData(new ArrayList<>());
+        mResultList = null;
         NetworkManager.getInstance().getLiveList("", new NetworkManager.BaseCallback<NetworkManager.VideoListResponse>() {
             @Override
             public void onSuccess(NetworkManager.VideoListResponse data) {
@@ -160,7 +161,7 @@ public class VideoActivity extends AppCompatActivity {
                 ThreadManager.getInstance().runOnUiThread(() -> {
                     mVideoListView.setData(dataList);
                     if (dataList.size() > 0) {
-                        playVideo(dataList.get(0).url);
+//                        playVideo(dataList.get(0).url);
                         mTitleText.setText(dataList.get(0).videoName);
                     }
                 });
@@ -187,8 +188,12 @@ public class VideoActivity extends AppCompatActivity {
             mPlayer.stop();
             mPlayer.release();
         }
+        DefaultLoadControl dl = new DefaultLoadControl.Builder()
+                .setBackBuffer(10000, true)
+                .setBufferDurationsMs(3000, 30000,3000, 3000)
+                .build();
         mPlayer = new ExoPlayer.Builder(VideoActivity.this)
-                .setLoadControl(new DefaultLoadControl())
+                .setLoadControl(dl)
                 .build();
         if (videoUrl.startsWith("http")) {
             mPlayer.addMediaItem(MediaItem.fromUri(videoUrl));
@@ -216,6 +221,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private void getVideoResult(String videoId) {
         Log.i(TAG, "getVideoResult");
+        mResultList = null;
         NetworkManager.getInstance().getResultNum(videoId, new NetworkManager.BaseCallback<NetworkManager.DetectionResultResponse>() {
             @Override
             public void onSuccess(NetworkManager.DetectionResultResponse data) {
@@ -247,11 +253,18 @@ public class VideoActivity extends AppCompatActivity {
             if (index > 0 && index < mResultList.size()) {
                 NetworkManager.ResultNum num = mResultList.get(index);
                 Log.i(TAG, "update current stat:" + index + "/" + mResultList.size());
-                ((TextView) findViewById(R.id.tv_with_mask)).setText(String.valueOf(num.withMask));
-                ((TextView) findViewById(R.id.tv_without_mask)).setText(String.valueOf(num.withoutMask));
-                ((TextView) findViewById(R.id.tv_unknown_mask)).setText(String.valueOf(num.unKnown));
+                ((TextView) findViewById(R.id.tv_with_mask)).setText(getNum(num.withMask));
+                ((TextView) findViewById(R.id.tv_without_mask)).setText(getNum(num.withoutMask));
+                ((TextView) findViewById(R.id.tv_unknown_mask)).setText(getNum(num.unKnown));
             }
         }
+    }
+
+    private static String getNum(int num) {
+        if (num < 0) {
+            num = 0;
+        }
+        return String.valueOf(num);
     }
 
     @Override
